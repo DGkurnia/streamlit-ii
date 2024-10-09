@@ -58,7 +58,7 @@ filtrat = tahunan[tahunan['station'] == pilihan]
 
 # Deklarasi tangga
 filtrat.set_index('datetime', inplace=True)
-
+#------------------------------------------
 #Grafik partikulat untuk Inspeksi partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
 #Batas aman
@@ -73,12 +73,10 @@ for pollutant, limit in safety_limits.items():
     fig.add_hline(y=limit, line_color="red", line_dash="dash",
                    annotation_text=f"{pollutant} Batas aman: {limit} µg/m³", 
                    annotation_position="top right")
-#Ilustrasi normal untuk partikulat
-st.plotly_chart(fig)
 #Pemeriksaan batas partikulat
-batasanu = hasil[(hasil['PM2.5'] > safety_limits['PM2.5 anual'] & hasil['PM2.5'] < safety_limits['PM2.5 maksimal']) 
-                 | (hasil['PM10'] > safety_limits['PM10 anual'] & hasil['PM10'] < safety_limits['10 maksimal'])] #Batas anual
-lwt = hasil[(hasil['PM2.5'] > safety_limits['PM2.5 maksimal']) | (hasil['PM10'] > safety_limits['PM10 maksimal'])] #Batas maksimal
+batasanu = filtrat[(filtrat['PM2.5'] > safety_limits['PM2.5 anual'] & filtrat['PM2.5'] < safety_limits['PM2.5 maksimal']) 
+                 | (filtrat['PM10'] > safety_limits['PM10 anual'] & filtrat['PM10'] < safety_limits['10 maksimal'])] #Batas anual
+lwt = filtrat[(filtrat['PM2.5'] > safety_limits['PM2.5 maksimal']) | (filtrat['PM10'] > safety_limits['PM10 maksimal'])] #Batas maksimal
 #Area batas anual
 if not lwt.empty:
     st.warning("Peringatan : Ini sudah terlalu bahaya")
@@ -86,4 +84,7 @@ elif not batasanu.empty and lwt.empty:
     st.warning("Peringatan : Ini harus hati-hati") #Kasus melewati batas anual (tapi di dibawah nilai maksimal)
 else:
     st.success("Kadar udara masih aman")
- #------------------------------------------
+#Ilustrasi normal untuk partikulat
+st.plotly_chart(fig)
+
+#------------------------------------------
