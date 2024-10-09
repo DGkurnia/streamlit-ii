@@ -8,7 +8,7 @@ import plotly.express as px
 import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
-sns.set(Literal='poster', style='dark')
+sns.set( style='dark')
 
 #Persiapan kepala
 st.set_page_config(page_title="Dashboard Kualitas Udara", layout="wide")
