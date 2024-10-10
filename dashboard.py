@@ -48,13 +48,19 @@ st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 #Data utama
 main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) & 
                 (beijingdf["datetime"] <= str(end_date))]
-#Deklarasi sub kepala
-st.subheader("Inspeksi Partikulat")
 
 #Deklarasi
 tahunan = main_df.groupby("datetime")
 
-pilihan = st.selectbox("Pilihan stasiun :", tahunan['station'].unique())
+#Pemilihan stasiun
+unik = main_df['station'].unique()
+
+#Deklarasi sub kepala
+st.subheader("Inspeksi Partikulat")
+
+
+#pilihan stasiun
+pilihan = st.selectbox("Pilihan stasiun :", unik)
 
 # Filtrasi data
 filtrat = tahunan[tahunan['station'] == pilihan]
