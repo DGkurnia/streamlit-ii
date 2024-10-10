@@ -42,24 +42,30 @@ with st.sidebar:
         max_value=max_date,
         value=[min_date, max_date]
     )
+
 #persiapan grafik partikulat
-st.header('Air Quality in Beijing :sparkles:')
+st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 #Data utama
 main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) & 
                 (beijingdf["datetime"] <= str(end_date))]
 #Deklarasi sub kepala
 st.subheader("Inspeksi Partikulat")
-tahunan = main_df.groupby("datetime").agg({'station': 'first', 'other_numeric_columns': 'mean'})
+tahunan = main_df.groupby("datetime")
 
 #pemilihan stasiun
-pilihan = st.selectbox("Pilihan stasiun", tahunan['station'].unique())
+pilihan = st.selectbox("Pilihan stasiun :", tahunan['station'].unique())
 # Filtrasi data
 filtrat = tahunan[tahunan['station'] == pilihan]
 
 # Deklarasi tangga
 filtrat.set_index('datetime', inplace=True)
 #------------------------------------------
-#Grafik partikulat untuk Inspeksi partikulat (nilai PM2.5 & nilai PM10)
+#Grafik partikulat
+
+
+
+#------------------------------------------
+#Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
 #Batas aman
 safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual dan Maksimal PM 2.5   
@@ -164,5 +170,4 @@ if not nibhy.empty:
 elif nibhy.empty and not nitinggi.empty:
     st.warning("Kadar nitrogen dioksida tinggo")
 else :
-    st.success("Kadar masih aman")
     st.success("Kadar masih aman")
