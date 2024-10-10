@@ -50,14 +50,17 @@ main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) &
                 (beijingdf["datetime"] <= str(end_date))]
 #Deklarasi sub kepala
 st.subheader("Inspeksi Partikulat")
+
+#Deklarasi
 tahunan = main_df.groupby("datetime")
 
-#pemilihan stasiun
 pilihan = st.selectbox("Pilihan stasiun :", tahunan['station'].unique())
+
 # Filtrasi data
 filtrat = tahunan[tahunan['station'] == pilihan]
 
-# Deklarasi tangga
+# Deklarasi tanggal
+
 filtrat.set_index('datetime', inplace=True)
 #------------------------------------------
 #Grafik partikulat
