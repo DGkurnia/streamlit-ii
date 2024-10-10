@@ -43,13 +43,13 @@ with st.sidebar:
         value=[min_date, max_date]
     )
 #persiapan grafik partikulat
-st.header('Air Quality in China :sparkles:')
+st.header('Air Quality in Beijing :sparkles:')
 #Data utama
 main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) & 
                 (beijingdf["datetime"] <= str(end_date))]
 #Deklarasi sub kepala
 st.subheader("Inspeksi Partikulat")
-tahunan = main_df.groupby("datetime").mean(numeric_only=True)
+tahunan = main_df.groupby("datetime").agg({'station': 'first', 'other_numeric_columns': 'mean'})
 
 #pemilihan stasiun
 pilihan = st.selectbox("Pilihan stasiun", tahunan['station'].unique())
