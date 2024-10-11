@@ -33,8 +33,8 @@ min_date = beijingdf["datetime"].min()
 max_date = beijingdf["datetime"].max()
 
 #Data utama
-main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) & 
-                (beijingdf["datetime"] <= str(end_date))]
+main_df = beijingdf[(beijingdf["datetime"] >= str(min_date)) & 
+                (beijingdf["datetime"] <= str(max_date))]
 
 #Pemilihan stasiun
 unik = main_df['station'].unique()
