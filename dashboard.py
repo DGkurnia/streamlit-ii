@@ -59,7 +59,7 @@ pilihan = st.selectbox("Pilihan stasiun :", unik)
 tahunan = main_df.groupby(["datetime","station"])
 
 # Filtrasi data
-filtrat = tahunan[tahunan['station'] == pilihan]
+filtrat = tahunan[tahunan['station'] == unik]
 
 
 # Deklarasi tanggal
