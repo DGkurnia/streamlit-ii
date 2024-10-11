@@ -36,7 +36,10 @@ unik = main_df_filtered_dates['station'].unique()
 pilihan = st.selectbox("Pilih Stasiun:", unik)
 
 # Deklarasi grup oleh tgl & stsiun
-filtrat = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station==pilihan)
+hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station==pilihan)
+filtrat = hasil.copy()
+#penampilan informasi terbaru
+
 
 # Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
 if len(filtrat)>0 :
