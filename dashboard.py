@@ -27,6 +27,7 @@ beijingdf.reset_index(inplace = True)
 for column in date:
     beijingdf[column] = pd.to_datetime(beijingdf[column])
 
+
 #Penentuan tanggal minimal dan maksimal
 min_date = beijingdf["datetime"].min()
 max_date = beijingdf["datetime"].max()
@@ -52,24 +53,20 @@ main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) &
 #Pemilihan stasiun
 unik = main_df['station'].unique()
 
-#pilihan stasiun
-pilihan = st.selectbox("Pilihan stasiun :", unik)
-
 #Deklarasi
 tahunan = main_df.groupby(["datetime","station"])
 
-# Filtrasi data
-filtrat = tahunan[tahunan['station'] == unik]
+#pilihan stasiun
+pilihan = st.selectbox("Pilihan stasiun :", unik)
 
+# Filtrasi data
+filtrat = tahunan[tahunan['station'].unique() == unik]
 
 # Deklarasi tanggal
 filtrat.set_index('datetime', inplace=True)
 
-#Penampilan grafik hasil jika benar
-if filtered_data.empty:
-   print("Data tidak ada.")
-else:
-   st.write(filtrat)
+#Penampilan grafik hasil
+st.write(filtrat)
 #------------------------------------------------------------------------------------
 # A.1 Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
