@@ -32,20 +32,6 @@ for column in date:
 min_date = beijingdf["datetime"].min()
 max_date = beijingdf["datetime"].max()
 
-#Penambahan logo
-with st.sidebar:
-    # Menambahkan logo perusahaan
-    st.image("https://seeklogo.com/images/S/streamlit-logo-1A3B208AE4-seeklogo.com.png")
-    
-    # Mengambil start_date & end_date dari date_input
-    start_date, end_date = st.date_input(
-        label='Filter Tanggal',min_value=min_date,
-        max_value=max_date,
-        value=[min_date, max_date]
-    )
-
-#persiapan grafik partikulat
-st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 #Data utama
 main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) & 
                 (beijingdf["datetime"] <= str(end_date))]
@@ -67,6 +53,21 @@ filtrat.set_index('datetime', inplace=True)
 
 #Penampilan grafik hasil
 st.write(filtrat)
+#Penambahan logo
+with st.sidebar:
+    # Menambahkan logo perusahaan
+    st.image("https://seeklogo.com/images/S/streamlit-logo-1A3B208AE4-seeklogo.com.png")
+    
+    # Mengambil start_date & end_date dari date_input
+    start_date, end_date = st.date_input(
+        label='Filter Tanggal',min_value=min_date,
+        max_value=max_date,
+        value=[min_date, max_date]
+    )
+
+#persiapan grafik partikulat
+st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
+
 #------------------------------------------------------------------------------------
 # A.1 Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
