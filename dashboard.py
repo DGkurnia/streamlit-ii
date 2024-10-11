@@ -38,23 +38,25 @@ pilihan = st.selectbox("Pilih Stasiun:", unik)
 # Deklarasi grup oleh tgl & stsiun
 hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station==pilihan)
 filtrat = hasil.copy()
+
 #Laporan terkini
 terkini = {
      'kota' : pilihan,
      'Kadar partikulat' : [(filtrat['PM2.5'].iloc[-1]),(filtrat['PM10'].iloc[-1])],
      'Senyawa CO': filtrat['CO'].iloc[-1],
-     'suhu ' : filtrat['TEMP'].iloc[-1]
+     'Kadar sulfur di udara': filtrat['SO2'].iloc[-1],
+     'Kadar nitrogen di udara': filtrat['NO2'].iloc[-1],
+     'suhu (celsius)' : filtrat['TEMP'].iloc[-1]
 }
-
 
 # Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
 if len(filtrat)>0 :
-     st.write(filtrat)
+     st.write(terkini)
 else:
       print("Tidak ditemukan rekaman untuk stasiun tersebut")
     
-#Penampilan grafik hasil
-st.write(filtrat)
+#Penampilan grafik laporan
+st.write(terkini)
 #Penambahan logo
 with st.sidebar:
     # Menambahkan logo perusahaan
