@@ -38,7 +38,13 @@ pilihan = st.selectbox("Pilih Stasiun:", unik)
 # Deklarasi grup oleh tgl & stsiun
 hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station==pilihan)
 filtrat = hasil.copy()
-#penampilan informasi terbaru
+#Laporan terkini
+terkini = {
+     'kota' : pilihan,
+     'Kadar partikulat' : [(filtrat['PM2.5'].iloc[-1]),(filtrat['PM10'].iloc[-1])],
+     'Senyawa CO': filtrat['CO'].iloc[-1],
+     'suhu ' : filtrat['TEMP'].iloc[-1]
+}
 
 
 # Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
