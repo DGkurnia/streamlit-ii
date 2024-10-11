@@ -19,7 +19,7 @@ st.write("Data Ini adalah hasil Inspeksi Kualitas udara Beijing.")
 beijingdf = pd.read_csv('beijingdf.csv')
 
 #deklarasi waktu
-date = beijingdf["datetime"]
+date = ["datetime"]
 beijingdf.sort_values(by="datetime", inplace=True)
 beijingdf.reset_index(inplace = True)
 
