@@ -15,42 +15,35 @@ st.set_page_config(page_title="Dashboard Kualitas Udara", layout="wide")
 st.title('Dashboard Inspeksi Kualitas Udara')
 st.write("Data Ini adalah hasil Inspeksi Kualitas udara Beijing.")
 
-#Persiapan dataset
+## Persiapan dataset
 beijingdf = pd.read_csv('beijingdf.csv')
-
-#deklarasi waktu
-date = ["datetime"]
 beijingdf.sort_values(by="datetime", inplace=True)
-beijingdf.reset_index(inplace = True)
 
-#iterasi kolom
-for column in date:
-    beijingdf[column] = pd.to_datetime(beijingdf[column])
+# Konversi kolom tanggal menjadi datetime
+beijingdf['datetime'] = pd.to_datetime(beijingdf['datetime'])
 
+# Penentuan tanggal minimal dan maksimal
+min_date = beijingdf["datetime"].min().strftime('%Y-%m-%d')  # Tanggal
+max_date = beijingdf["datetime"].max().strftime('%Y-%m-%d')  
 
-#Penentuan tanggal minimal dan maksimal
-min_date = beijingdf["datetime"].min()
-max_date = beijingdf["datetime"].max()
+# Data utama dalam rentang waktu tertentu (optional)
+main_df_filtered_dates = beijingdf[
+        (beijingdf["datetime"] >= min_date) &
+        (beijingdf["datetime"] <= max_date)]
 
-#Data utama
-main_df = beijingdf[(beijingdf["datetime"] >= str(min_date)) & 
-                (beijingdf["datetime"] <= str(max_date))]
+# Pemilihan stasiun
+unik = main_df_filtered_dates['station'].unique()
+pilihan = st.selectbox("Pilih Stasiun:", unik)
 
-#Pemilihan stasiun
-unik = main_df['station'].unique()
+# Deklarasi grup oleh tgl & stsiun
+filtrat = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station==pilihan)
 
-#Deklarasi
-tahunan = main_df.groupby(["datetime","station"])
-
-#pilihan stasiun
-pilihan = st.selectbox("Pilihan stasiun :", unik)
-
-# Filtrasi data
-filtrat = tahunan[tahunan['station'].unique() == unik]
-
-# Deklarasi tanggal
-filtrat.set_index('datetime', inplace=True)
-
+# Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
+if len(filtrat)>0 :
+     st.write(filtrat)
+else:
+      print("Tidak ditemukan rekaman untuk stasiun tersebut")
+    
 #Penampilan grafik hasil
 st.write(filtrat)
 #Penambahan logo
