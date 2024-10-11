@@ -23,10 +23,6 @@ date = beijingdf["datetime"]
 beijingdf.sort_values(by="datetime", inplace=True)
 beijingdf.reset_index(inplace = True)
 
-#iterasi kolom
-for col in date : #iterasi tanggal
-    beijingdf[col] = pd.to_datetime(beijingdf[col])
-
 #Penentuan tanggal minimal dan maksimal
 min_date = beijingdf["datetime"].min()
 max_date = beijingdf["datetime"].max()
