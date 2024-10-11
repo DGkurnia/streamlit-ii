@@ -19,7 +19,7 @@ st.write("Data Ini adalah hasil Inspeksi Kualitas udara Beijing.")
 beijingdf = pd.read_csv('beijingdf.csv')
 
 #deklarasi waktu
-date = ["datetime"]
+date = beijingdf["datetime"]
 beijingdf.sort_values(by="datetime", inplace=True)
 beijingdf.reset_index(inplace = True)
 
@@ -53,7 +53,7 @@ main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) &
 unik = main_df['station'].unique()
 
 #Deklarasi
-tahunan = main_df.groupby("datetime")
+tahunan = main_df.groupby(["datetime","station"])
 
 #pilihan stasiun
 pilihan = st.selectbox("Pilihan stasiun :", unik)
