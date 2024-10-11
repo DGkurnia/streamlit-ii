@@ -52,11 +52,8 @@ main_df = beijingdf[(beijingdf["datetime"] >= str(start_date)) &
 #Pemilihan stasiun
 unik = main_df['station'].unique()
 
-#Deklarasi data dari tanggal
+#Deklarasi
 tahunan = main_df.groupby("datetime")
-
-#Deklarasi sub kepala
-st.subheader("Inspeksi Partikulat")
 
 #pilihan stasiun
 pilihan = st.selectbox("Pilihan stasiun :", unik)
@@ -65,117 +62,49 @@ pilihan = st.selectbox("Pilihan stasiun :", unik)
 filtrat = tahunan[tahunan['station'] == pilihan]
 
 # Deklarasi tanggal
-
 filtrat.set_index('datetime', inplace=True)
-#------------------------------------------
-#Grafik partikulat
 
-
-
-#------------------------------------------
-#Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
+#Penampilan grafik hasil
+st.write(filtrat)
+#------------------------------------------------------------------------------------
+# A.1 Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
 #Batas aman
 safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual dan Maksimal PM 2.5   
                  'PM10 anual': anPMb, 'PM10 maksimal': dlPMb} #Batas anual dan maksimal PM.10
 #Keterangan (1. a adalah inepeksi PM2.5 b adalah PM10 2. kode an adalah anual kode ma adalah nilai maksimal)
-fig = px.line(filtrat, x='datetime', y=['PM2.5', 'PM10'],
-              labels={['PM2.5','PM10']: 'Kadar Partikulat', 'datetime': 'Tanggal'},
-              title='Inspeksi Partikulat')
-#Inspeksi Batas Aman
-for pollutant, limit in safety_limits.items():
-    fig.add_hline(y=limit, line_color="red", line_dash="dash",
-                   annotation_text=f"{pollutant} Batas aman: {limit} µg/m³", 
-                   annotation_position="top right")
-#Pemeriksaan batas partikulat
-batasanu = filtrat[(filtrat['PM2.5'] > safety_limits['PM2.5 anual'] & filtrat['PM2.5'] < safety_limits['PM2.5 maksimal']) 
-                 | (filtrat['PM10'] > safety_limits['PM10 anual'] & filtrat['PM10'] < safety_limits['10 maksimal'])] #Batas anual
-lwt = filtrat[(filtrat['PM2.5'] > safety_limits['PM2.5 maksimal']) | (filtrat['PM10'] > safety_limits['PM10 maksimal'])] #Batas maksimal
-#Area batas anual
-if not lwt.empty:
-    st.warning("Peringatan : Ini sudah terlalu bahaya")
-elif not batasanu.empty and lwt.empty:
-    st.warning("Peringatan : Ini harus hati-hati") #Kasus melewati batas anual (tapi di dibawah nilai maksimal)
-else:
-    st.success("Kadar udara masih aman")
-#Ilustrasi normal untuk partikulat
-st.plotly_chart(fig)
+
+# A.2 Deklarasi sub kepala grafik
+st.subheader("Inspeksi Partikulat")
+
+if st.checkbox("Show Interactive Plots"):
+    pm25_fig = px.line(filtrat, x=filtrat.index, y='pm25', name='PM2.5')
+    pm10_fig = px.line(filtrat, x=filtrat.index, y='pm10', name='PM10')
+
+    fig = pm25_fig | pm10_fig
+    
+    # Penambahan Partikulat
+    fig.add_hline(y=anPMa, annotation_text=f'Safe Limit ({anPMa})', row=0,
+                  col=-1).update(line_width=2)
+    
+    fig.add_hline(y=dlPMa, annotation_text=f'Max Safe Limit ({dlPMa})', row=0,
+                  col=-1).update(line_style='dashdot', line_width=2)
+    
+    fig.add_hline(y=anPMb, annotation_text=f'Safe Limit ({anPMb})', row=1,
+                  col=-1).update(line_width=2)
+    
+    fig.add_hline(y=dlPMb, annotation_text=f'Max Safe Limit ({dlPMb})', row=1,
+                  col=-1).update(line_style='dashdot', line_width=2)
+    
+    st.plotly_chart(fig, HEIGHT=800,WIDTH=800, TITLE=F'Inspeksi Konsentrasi Partikulat')
 
 #------------------------------------------
 #Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
 [cochl, cogl, ozmin, ozmax, nmax, smax ] = [4000, 30000, 50, 160, 200, 500]
 #Deklarasi batas senyawa
 colim = { 'China' : cochl, 'Global' : cogl} #Batas senyawa CO
-ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Ozon/ ozon
+ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Ozon/ ozon (O3)
 nitlim = {'anual': 40, 'maksimal' : nmax} # nitrogen dioksida (NO2)
-sulplim = {'anual': 40, 'maksimal': smax} #Sulfur dioksida
+sulplim = {'anual': 40, 'maksimal': smax} #Sulfur dioksida (SO2)
 
-#Pemeriksaan senyawa CO
-#Grafik pengecekan senyawa karbon monoksida (CO)
-fig = px.line(filtrat, x='datetime', y=['CO'],
-              labels={'CO': 'Konsentrasi CO', 'datetime': 'Tanggal'},
-              title='Inspeksi Partikulat')
-#Inspeksi Batas Aman
-for pollutant, limit in colim.items():
-    fig.add_hline(y=limit, line_color="red", line_dash="dash",
-                   annotation_text=f"{pollutant} Batas aman: {limit} µg/m³", 
-                   annotation_position="top right")
-#Ilustrasi normal untuk senyawa (CO)
-st.plotly_chart(fig)
-#Pemeriksaan batas partikulat
-lwtchina = filtrat[(filtrat['CO'] > colim['China']) & (filtrat['CO'] < colim['Global'])] #Batas di 
-lwtglobal = filtrat[(filtrat['CO'] > colim['Global'])] #Batas aglobal
-#Area batas anual
-if not lwtglobal.empty:
-    st.warning("Peringatan : Ini sudah terlalu bahaya untuk global juga")
-elif not lwtchina.empty and lwtglobal.empty:
-    st.warning("Peringatan : Otoritas china boleh melarang ini") # 
-else:
-    st.success("Kadar senyawa CO masih aman")
-#-----------------------------------------------
-#Inspeksi senyawa Ozon (Grafik inspeksi O3)
-#Grafik pengecekan senyawa Ozon (O3)
-fig = px.line(filtrat, x='datetime', y=['O3'],
-              labels={'O3': 'Konsentrasi ozon', 'datetime': 'Tanggal'},
-              title='Inspeksi Senyawa ozon')
-#Inspeksi Batas Aman
-for pollutant, limit in ozlim.items():
-    fig.add_hline(y=limit, line_color="red", line_dash="dash",
-                   annotation_text=f"{pollutant} Batas aman: {limit} µg/m³", 
-                   annotation_position="top right")
-#Ilustrasi normal untuk senyawa (CO)
-st.plotly_chart(fig)
-#Pemeriksaan kadar ozon
-ozrdh = filtrat[(filtrat['O3'] < ozlim['minimum'])] #rendah
-ozopti = filtrat[(filtrat['O3'] > ozlim['minimum']) & (filtrat['O3'] < ozlim['maksimum'])] #optimal
-ozmaks = filtrat[(filtrat['O3'] > ozlim['maksimum'])]
-#Kondisional untuk senaywa ozon
-if not ozmaks.empty :
-    st.warning("Kadar ozon sangat tinggi")
-elif (ozmaks.empy and ozrdh.empy) and not ozopti.empty:
-    st.success("Kadar ozon masih aman")
-else:
-    st.warning("Kadar ozon sangat rendah")
-#----------------------------------
-#Inspeksi senyawa Nitrogen dioksida (Grafik inspeksi NO2)
-#Grafik pengecekan senyawa Nitrogen Dioksida (NO2)
-fig = px.line(filtrat, x='datetime', y=['NO2'],
-              labels={'NO2': 'Konsentrasi NO2', 'datetime': 'Tanggal'},
-              title='Inspeksi Partikulat')
-#Inspeksi Batas Aman
-for pollutant, limit in nitlim.items():
-    fig.add_hline(y=limit, line_color="red", line_dash="dash",
-                   annotation_text=f"{pollutant} Batas aman: {limit} µg/m³", 
-                   annotation_position="top right")
-#Ilustrasi normal untuk senyawa (NO2)
-st.plotly_chart(fig)
-#Pemeriksaan kondisi NO2
-nitinggi = filtrat[(filtrat['NO2'] < nitlim['maksimum']) & (filtrat['NO2'] > nitlim['anual'])]
-nibhy = filtrat[(filtrat['NO2'] > nitlim['maksimum'])]
-#Kondisional senyawa NO2
-if not nibhy.empty:
-    st.warning("Kadar nitrogen dioksida terlalu berbahaya")
-elif nibhy.empty and not nitinggi.empty:
-    st.warning("Kadar nitrogen dioksida tinggo")
-else :
-    st.success("Kadar masih aman")
+
