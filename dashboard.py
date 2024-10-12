@@ -90,7 +90,7 @@ fig.add_hline(y=safety_limits['PM10 maksimal'], line_dash="dash", line_color="ye
 
 # Tampilkan hasil di grafik
 st.title("Grafik Inspeksi Partikulat untuk dua kondisi")
-st.plotly_chart(fig)
+st.plotly_chart(fig, use_container_width=True)
 
 #------------------------------------------
 #Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
@@ -108,7 +108,7 @@ fig2.add_hline(y=colim['Global'], line_dash="dash", line_color="red", annotation
 
 # Tampilkan hasil di grafik
 st.title("Grafik Inspeksi Senyawa Karbon Monoksida")
-st.plotly_chart(fig2)
+st.plotly_chart(fig2, use_container_width=True)
 
 
 
