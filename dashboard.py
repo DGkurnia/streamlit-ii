@@ -18,8 +18,9 @@ st.write("Data Ini adalah hasil Inspeksi Kualitas udara Beijing.")
 ## Persiapan dataset
 beijingdf = pd.read_csv('beijingdf.csv')
 beijingdf.sort_values(by="datetime", inplace=True)
+beijingdf.reset_index(inplace=True)
 
-# Konversi kolom tanggal menjadi datetime
+# Konversi kolom tanggal menjadi tanggal
 beijingdf['datetime'] = pd.to_datetime(beijingdf['datetime'])
 
 # Penentuan tanggal minimal dan maksimal
@@ -68,14 +69,15 @@ with st.sidebar:
         max_value=max_date,
         value=[min_date, max_date]
     )
-
 #persiapan grafik partikulat
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
+
 
 #------------------------------------------------------------------------------------
 # A.1 Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
-#Batas aman
+
+#Batas aman partikulat
 safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual dan Maksimal PM 2.5   
                  'PM10 anual': anPMb, 'PM10 maksimal': dlPMb} #Batas anual dan maksimal PM.10
 #Keterangan (1. a adalah inepeksi PM2.5 b adalah PM10 2. kode an adalah anual kode ma adalah nilai maksimal)
@@ -89,7 +91,7 @@ if st.checkbox("Show Interactive Plots"):
 
     fig = pm25_fig | pm10_fig
     
-    # Penambahan Partikulat
+    # Penambahan Kondisional Partikulat
     fig.add_hline(y=anPMa, annotation_text=f'Safe Limit ({anPMa})', row=0,
                   col=-1).update(line_width=2)
     
@@ -102,7 +104,7 @@ if st.checkbox("Show Interactive Plots"):
     fig.add_hline(y=dlPMb, annotation_text=f'Max Safe Limit ({dlPMb})', row=1,
                   col=-1).update(line_style='dashdot', line_width=2)
     
-    st.plotly_chart(fig, HEIGHT=800,WIDTH=800, TITLE=F'Inspeksi Konsentrasi Partikulat')
+    st.plotly_chart(fig, height=800,width=800, title=F'Inspeksi Konsentrasi Partikulat')
 
 #------------------------------------------
 #Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
