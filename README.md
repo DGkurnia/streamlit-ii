@@ -72,9 +72,11 @@ e. Inspeksi senyawa NO2
 
 ```
 
-### Eksekusi komando
+### Eksekusi komando dashboard
 ```
-a. siapkan repositori 'streamlit-ii'
+a. siapkan repositori 'streamlit-ii' di github
+b. pastikan elemen di dalam sudah sesuai
+c. link ke streamlit: 'https://dummyaqi.streamlit.app/'
 
 ```
 
@@ -82,6 +84,7 @@ a. siapkan repositori 'streamlit-ii'
 ```
 pip install streamlit
 pip install -r requirements.txt # untuk instalasi file di vscode
+
 ```
 
 
