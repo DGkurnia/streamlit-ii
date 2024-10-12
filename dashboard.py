@@ -83,28 +83,16 @@ safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual d
 #Keterangan (1. a adalah inepeksi PM2.5 b adalah PM10 2. kode an adalah anual kode ma adalah nilai maksimal)
 
 # A.2 Deklarasi sub kepala grafik
-st.subheader("Inspeksi Partikulat")
+# A.2 Deklarasi sub kepala grafik
+fig = px.line(filtrat, x='datetime', y=['PM2.5', 'PM10'], title='Level Partikulat untuk dua Kondisi')
+fig.add_hline(y=safety_limits['PM2.5 maksimal'], line_dash="dash", line_color="red", annotation_text="Batas Maksimal Partikulat PM2.5")
+fig.add_hline(y=safety_limits['PM2.5 anual'], line_dash="dash", line_color="orange", annotation_text="Batas Anual Partikulat PM2.5")
+fig.add_hline(y=safety_limits['PM10 anual'], line_dash="dash", line_color="grey", annotation_text="Batas Anual Partikulat PM10")
+fig.add_hline(y=safety_limits['PM10 maksimal'], line_dash="dash", line_color="yellow", annotation_text="Batas Maksimal Partikulat PM10")
 
-if st.checkbox("Show Interactive Plots"):
-    pm25_fig = px.line(filtrat, x=filtrat.index, y='pm25', name='PM2.5')
-    pm10_fig = px.line(filtrat, x=filtrat.index, y='pm10', name='PM10')
-
-    fig = pm25_fig | pm10_fig
-    
-    # Penambahan Kondisional Partikulat
-    fig.add_hline(y=anPMa, annotation_text=f'Safe Limit ({anPMa})', row=0,
-                  col=-1).update(line_width=2)
-    
-    fig.add_hline(y=dlPMa, annotation_text=f'Max Safe Limit ({dlPMa})', row=0,
-                  col=-1).update(line_style='dashdot', line_width=2)
-    
-    fig.add_hline(y=anPMb, annotation_text=f'Safe Limit ({anPMb})', row=1,
-                  col=-1).update(line_width=2)
-    
-    fig.add_hline(y=dlPMb, annotation_text=f'Max Safe Limit ({dlPMb})', row=1,
-                  col=-1).update(line_style='dashdot', line_width=2)
-    
-    st.plotly_chart(fig, height=800,width=800, title=F'Inspeksi Konsentrasi Partikulat')
+# Display the dashboard
+st.title("Grafik Inspeksi Partikulat untuk dua kondisi")
+st.plotly_chart(fig)
 
 #------------------------------------------
 #Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
