@@ -26,7 +26,7 @@ b. Proses pembersihan data untuk mejawab pertanyaan berikut:
 Proses pembersihan data dengan interpolasi demi memperoleh informasi
 b.1 pembersihan data dengan teknik interpolasi
 b.2 pemeriksaan untuk interpolasi dua tahap untuk pembersihan data
-b.3   
+b.3 penerapan interpolasi demi menghindari penghapusan  
 
 ```
 ### Informasi data
