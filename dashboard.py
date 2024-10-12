@@ -56,8 +56,6 @@ if len(filtrat)>0 :
 else:
       print("Tidak ditemukan rekaman untuk stasiun tersebut")
     
-#Penampilan grafik laporan terkini
-st.write(terkini)
 #Penambahan logo
 with st.sidebar:
     # Menambahkan logo perusahaan
@@ -103,13 +101,13 @@ nitlim = {'anual': 40, 'maksimal' : nmax} #Batas  nitrogen dioksida (NO2)
 sulplim = {'anual': 40, 'maksimal': smax} #Batas Sulfur dioksida (SO2)
 #--------------------------------------------
 #A3. Grafik Inspeksi senyawa CO
-fig = px.line(filtrat, x='datetime', y=['CO'], title='Level Partikulat untuk dua Kondisi')
-fig.add_hline(y=colim['China'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO di cina")
-fig.add_hline(y=colim['Global'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO untuk global")
+fig2 = px.line(filtrat, x='datetime', y=['CO'], title='Level Partikulat untuk dua Kondisi')
+fig2.add_hline(y=colim['China'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO di cina")
+fig2.add_hline(y=colim['Global'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO untuk global")
 
 # Tampilkan hasil di grafik
 st.title("Grafik Inspeksi Senyawa Karbon Monoksida")
-st.plotly_chart(fig)
+st.plotly_chart(fig2)
 
 
 
