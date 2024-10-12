@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
@@ -68,11 +69,19 @@ with st.sidebar:
         max_value=max_date,
         value=[min_date, max_date]
     )
-#persiapan grafik partikulat
+#persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 
+#-------------------- 
 
-#------------------------------------------------------------------------------------
+# #(Persiapan sub data)
+gruppar = filtrat[['datetime', 'PM2.5', 'PM10']] #inspeksi partikulat
+cogrp = filtrat[['datetime','CO']] #inspeksi senyawa CO
+ozgrpm = filtrat[['datetime','O3']] #inspeksi senyawa ozon
+nigrp = filtrat[['datetime','NO2']] #inspeksi senyawa nitrogen
+sulgrp = filtrat[['datetime','SO2']] #inspeksi senyawa sulfur
+
+#--------------------
 # A.1 Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
 
@@ -80,18 +89,37 @@ st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual dan Maksimal PM 2.5   
                  'PM10 anual': anPMb, 'PM10 maksimal': dlPMb} #Batas anual dan maksimal PM.10
 #Keterangan (1. a adalah inepeksi PM2.5 b adalah PM10 2. kode an adalah anual kode ma adalah nilai maksimal)
+# Judul grafik
+st.header("Inspeksi partikulat dalam suatu waktu")
 
-# A.2 Deklarasi sub kepala grafik
-fig = px.line(filtrat, x='datetime', y=['PM2.5', 'PM10'], title='Level Partikulat untuk dua Kondisi')
-fig.add_hline(y=safety_limits['PM2.5 maksimal'], line_dash="dash", line_color="red", annotation_text="Batas Maksimal Partikulat PM2.5")
-fig.add_hline(y=safety_limits['PM2.5 anual'], line_dash="dash", line_color="orange", annotation_text="Batas Anual Partikulat PM2.5")
-fig.add_hline(y=safety_limits['PM10 anual'], line_dash="dash", line_color="grey", annotation_text="Batas Anual Partikulat PM10")
-fig.add_hline(y=safety_limits['PM10 maksimal'], line_dash="dash", line_color="yellow", annotation_text="Batas Maksimal Partikulat PM10")
+# Koversi grup ke data waktu [partikulat]
+gruppar['datetime'] = pd.to_datetime(gruppar['datetime'])
+#grafik
+plt.figure(figsize=(12, 6))
 
-# Tampilkan hasil di grafik
-st.title("Grafik Inspeksi Partikulat untuk dua kondisi")
-st.plotly_chart(fig, use_container_width=True)
+# Scatter plot for PM2.5
+plt.scatter(gruppar['datetime'], gruppar['PM2.5'], color='blue', label='PM2.5', alpha=0.6)
 
+# Grafik sebaran
+plt.scatter(gruppar['datetime'], gruppar['PM10'], color='orange', label='PM10', alpha=0.6)
+
+# Batas anual
+plt.axhline(y=safety_limits['PM2.5 annual'], color='lightblue', linestyle=':', label='Annual Safe PM2.5 (40 µg/m³)')
+plt.axhline(y=safety_limits['PM10 annual'], color='lightyellow', linestyle=':', label='Annual Safe PM10 (35 µg/m³)')
+
+# Batas Maksimal
+plt.axhline(y=safety_limits['PM2.5 maximum'], color='blue', linestyle='--', label='Max Safe PM2.5 (150 µg/m³)')
+plt.axhline(y=safety_limits['PM10 maximum'], color='orange', linestyle='--', label='Max Safe PM10 (75 µg/m³)')
+
+#rincian grafik partikulat
+plt.title('Inspeksi Partikulat sepanjang waktu')
+plt.xlabel('Date and Time')
+plt.ylabel('Particulate Levels (µg/m³)')
+plt.xticks(rotation=45)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 #------------------------------------------
 #Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
 [cochl, cogl, ozmin, ozmax, nmax, smax ] = [4000, 30000, 50, 160, 200, 500]
@@ -102,13 +130,6 @@ nitlim = {'anual': 40, 'maksimal' : nmax} #Batas  nitrogen dioksida (NO2)
 sulplim = {'anual': 40, 'maksimal': smax} #Batas Sulfur dioksida (SO2)
 #--------------------------------------------
 #A3. Grafik Inspeksi senyawa CO
-fig2 = px.line(filtrat, x='datetime', y=['CO'], title='Level Partikulat untuk dua Kondisi')
-fig2.add_hline(y=colim['China'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO di cina")
-fig2.add_hline(y=colim['Global'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO untuk global")
-
-# Tampilkan hasil di grafik
-st.title("Grafik Inspeksi Senyawa Karbon Monoksida")
-st.plotly_chart(fig2, use_container_width=True)
 
 
 
