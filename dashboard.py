@@ -16,7 +16,7 @@ st.title('Dashboard Inspeksi Kualitas Udara')
 st.write("Data Ini adalah hasil Inspeksi Kualitas udara Beijing.")
 
 ## Persiapan dataset
-beijingdf = pd.read_csv('beijingdf.csv')
+beijingdf = pd.read_csv('beijingdf.csv') #Data
 beijingdf.sort_values(by="datetime", inplace=True)
 beijingdf.reset_index(inplace=True)
 
@@ -28,16 +28,14 @@ min_date = beijingdf["datetime"].min().strftime('%Y-%m-%d')  # Tanggal
 max_date = beijingdf["datetime"].max().strftime('%Y-%m-%d')  
 
 # Data utama dalam rentang waktu tertentu (optional)
-main_df_filtered_dates = beijingdf[
-        (beijingdf["datetime"] >= min_date) &
-        (beijingdf["datetime"] <= max_date)]
-
-# Pemilihan stasiun
-unik = main_df_filtered_dates['station'].unique()
-pilihan = st.selectbox("Pilih Stasiun:", unik)
-
-# Deklarasi grup oleh tgl & stsiun
-hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station==pilihan)
+main_df_filtered_dates = beijingdf[(beijingdf["datetime"]>=min_date)&(beijingdf["datetime"]<=max_date)]
+   
+unik = main_df_filtered_dates['station'].unique() #penenda
+   
+pilihan = st.selectbox("Select Station:", unik)
+   
+hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station == pilihan)
+   
 filtrat = hasil.copy()
 
 #Laporan terkini
@@ -45,9 +43,12 @@ terkini = {
      'kota' : pilihan,
      'Kadar partikulat' : [(filtrat['PM2.5'].iloc[-1]),(filtrat['PM10'].iloc[-1])],
      'Senyawa CO': filtrat['CO'].iloc[-1],
+     'Kadar ozon' : filtrat['O3'].iloc[-1],
      'Kadar sulfur di udara': filtrat['SO2'].iloc[-1],
      'Kadar nitrogen di udara': filtrat['NO2'].iloc[-1],
-     'suhu (celsius)' : filtrat['TEMP'].iloc[-1]
+     'suhu (celsius)' : filtrat['TEMP'].iloc[-1],
+     'Suhu dan kelembapan': filtrat[['TEMP','DEWP']].iloc[-1],
+     'kecepatan angin': filtrat['WSPM'].iloc[-1] 
 }
 
 # Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
