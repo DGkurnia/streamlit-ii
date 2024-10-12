@@ -56,7 +56,7 @@ if len(filtrat)>0 :
 else:
       print("Tidak ditemukan rekaman untuk stasiun tersebut")
     
-#Penampilan grafik laporan
+#Penampilan grafik laporan terkini
 st.write(terkini)
 #Penambahan logo
 with st.sidebar:
@@ -83,14 +83,13 @@ safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual d
 #Keterangan (1. a adalah inepeksi PM2.5 b adalah PM10 2. kode an adalah anual kode ma adalah nilai maksimal)
 
 # A.2 Deklarasi sub kepala grafik
-# A.2 Deklarasi sub kepala grafik
 fig = px.line(filtrat, x='datetime', y=['PM2.5', 'PM10'], title='Level Partikulat untuk dua Kondisi')
 fig.add_hline(y=safety_limits['PM2.5 maksimal'], line_dash="dash", line_color="red", annotation_text="Batas Maksimal Partikulat PM2.5")
 fig.add_hline(y=safety_limits['PM2.5 anual'], line_dash="dash", line_color="orange", annotation_text="Batas Anual Partikulat PM2.5")
 fig.add_hline(y=safety_limits['PM10 anual'], line_dash="dash", line_color="grey", annotation_text="Batas Anual Partikulat PM10")
 fig.add_hline(y=safety_limits['PM10 maksimal'], line_dash="dash", line_color="yellow", annotation_text="Batas Maksimal Partikulat PM10")
 
-# Display the dashboard
+# Tampilkan hasil di grafik
 st.title("Grafik Inspeksi Partikulat untuk dua kondisi")
 st.plotly_chart(fig)
 
@@ -99,8 +98,18 @@ st.plotly_chart(fig)
 [cochl, cogl, ozmin, ozmax, nmax, smax ] = [4000, 30000, 50, 160, 200, 500]
 #Deklarasi batas senyawa
 colim = { 'China' : cochl, 'Global' : cogl} #Batas senyawa CO
-ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Ozon/ ozon (O3)
-nitlim = {'anual': 40, 'maksimal' : nmax} # nitrogen dioksida (NO2)
-sulplim = {'anual': 40, 'maksimal': smax} #Sulfur dioksida (SO2)
+ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Inspeksi Ozon/ ozon (O3)
+nitlim = {'anual': 40, 'maksimal' : nmax} #Batas  nitrogen dioksida (NO2)
+sulplim = {'anual': 40, 'maksimal': smax} #Batas Sulfur dioksida (SO2)
+#--------------------------------------------
+#A3. Grafik Inspeksi senyawa CO
+fig = px.line(filtrat, x='datetime', y=['CO'], title='Level Partikulat untuk dua Kondisi')
+fig.add_hline(y=colim['China'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO di cina")
+fig.add_hline(y=colim['Global'], line_dash="dash", line_color="red", annotation_text="Batas maksimal CO untuk global")
+
+# Tampilkan hasil di grafik
+st.title("Grafik Inspeksi Senyawa Karbon Monoksida")
+st.plotly_chart(fig)
+
 
 
