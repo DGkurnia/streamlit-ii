@@ -89,25 +89,13 @@ sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
 
 #tambahan 2: rata-rata mingguan
-weekly = filtrat.resample('W-MON', on='datetime').mean().reset_index().copy() #data mingguan
+weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2']].mean().copy() #data mingguan
 #persiapan data mingguan
 wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
 wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 
-#Senyawa CO
-cowek = weekly[['datetime','CO']].copy() #inspeksi senyawa CO
-cowek['datetime'] = pd.to_datetime(cowek['datetime'])
-
-#senyawa ozon
-ozwek = weekly[['datetime','O3']].copy() #inspeksi senyawa ozon
-ozwek['datetime'] = pd.to_datetime(ozwek['datetime'])
-#Nitrogen
-niwek = weekly[['datetime','NO2']].copy() #inspeksi senyawa nitrogen
-niwek['datetime'] = pd.to_datetime(niwek['datetime'])
-#sulfur
-sulwek = weekly[['datetime','SO2']].copy() #inspeksi senyawa sulfur
-sulwek['datetime'] = pd.to_datetime(sulwek['datetime'])
-
+#Inspeksi Senyawa
+wekcompound = weekly.resample('W-MON', on='datetime')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
 
 #-------------------- (laporan mingguan: bagian data aman)
@@ -128,14 +116,59 @@ ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Inspeksi Ozon/ ozon (O3)
 nitlim = {'anual': 40, 'maksimal' : nmax} #Batas  nitrogen dioksida (NO2)
 sulplim = {'anual': 40, 'maksimal': smax} #Batas Sulfur dioksida (SO2)
 
+#Penulisan ulang untuk batas senyawa di analisis mingguan
+complimit = {
+    'CO': {'China': colim['China'], 'Global': colim['Global']},
+    'O3': {'min': ozlim['minimum'], 'maksimum': ozlim['maksimum']},
+    'NO2': {'anual': nitlim['anual'], 'maksimum': nitlim['maksimal']},
+    'SO2': {'anual': sulplim['anual'], 'maksimum': sulplim['maksimal']}
+}
 
 #--------------------Grafik mingguan
+# Inspeksi grafik mingguan
+for pollutant in ['PM2.5', 'PM10']:
+    fig = px.bar(wekpar[pollutant],
+                 title=f"Weekly Average {pollutant.capitalize()} Levels",
+                 labels={'value': f'{pollutant.capitalize()} levels'})
 
+    # Bagian batas aman
+    fig.add_hline(y=safety_limits[f"{pollutant} anual"], line_color='orange', 
+                  annotation_text="Annual Limit", annotation_position="top left")
+    
+    if pollutant == 'PM10':
+        fig.add_hline(y=safety_limits[f"{pollutant} maksimal"], line_color='red',
+                      annotation_text="Maximal Limit", annotation_position="top left")
 
-#---------------------
+# Inspeksi Senyawa
+for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
+    fig = px.bar(complimit[[pollutant]],
+                 title=f"Weekly Average {pollutant.capitalize()} Levels",
+                 labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
+    
+    # Add safety limits as horizontal lines for CO, O3, NO2, SO2 if applicable
+    if pollutant == 'CO':
+        fig.add_hline(y=complimit[pollutant]['China'], line_color='red', line_dash='dash',
+                      annotation_text="Batas aman di China", annotation_position="top right")
+        fig.add_hline(y=safety_limits[pollutant]['Global'], line_color='orange', line_dash='dash',
+                      annotation_text="Global Limit", annotation_position="top right")
+    
+    elif pollutant == 'O3':
+        fig.add_hline(y=complimit[pollutant]['min'], line_color='red', line_dash='dash',
+                      annotation_text="Batas anual", annotation_position="top right")
+        fig.add_hline(y=complimit[pollutant]['maksimum'], line_color='orange', line_dash='dash',
+                      annotation_text="Batas maksimal", annotation_position="top right")
+    
+    elif pollutant in ['NO2', 'SO2']:
+        fig.add_hline(y=complimit[pollutant]['maksimum'], line_color='red', line_dash='dash',
+                      annotation_text="Batas maksimal", annotation_position="top right")
+        fig.add_hline(y=complimit[pollutant]['anual'], line_color='orange', line_dash='dash',
+                      annotation_text="Batas Anual", annotation_position="top right")
+
+    st.plotly_chart(fig)
+
+#---------------------(Grafik total)
 # Judul grafik total
 st.header("Inspeksi partikulat dalam suatu waktu")
-
 # komponen grafik
 plt.figure(figsize=(12, 6))
 
@@ -163,9 +196,11 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 #------------------------------------------
+#A3. Grafik Inspeksi senyawa CO
+
 
 #--------------------------------------------
-#A3. Grafik Inspeksi senyawa CO
+
 
 
 
