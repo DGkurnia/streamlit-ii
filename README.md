@@ -84,7 +84,7 @@ c. link ke streamlit: 'https://dummyaqi.streamlit.app/'
 ```
 pip install streamlit
 pip install -r requirements.txt # untuk instalasi file di vscode
-
+instal di streamlit online dengan url : https://dummyaqidash.streamlit.app/
 ```
 
 
