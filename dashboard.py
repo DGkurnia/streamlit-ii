@@ -37,19 +37,19 @@ pilihan = st.selectbox("Select Station:", unik)
    
 hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station == pilihan)
    
-filtrat = hasil.copy()
+filtrat = hasil.copy() #salinan untuk keamanan
 
 #Laporan terkini
 terkini = {
      'kota' : pilihan,
-     'Kadar partikulat' : [(filtrat['PM2.5'].iloc[-1]),(filtrat['PM10'].iloc[-1])],
-     'Senyawa CO': filtrat['CO'].iloc[-1],
-     'Kadar ozon' : filtrat['O3'].iloc[-1],
-     'Kadar sulfur di udara': filtrat['SO2'].iloc[-1],
-     'Kadar nitrogen di udara': filtrat['NO2'].iloc[-1],
-     'suhu (celsius)' : filtrat['TEMP'].iloc[-1],
-     'Suhu dan kelembapan': filtrat[['TEMP','DEWP']].iloc[-1],
-     'kecepatan angin': filtrat['WSPM'].iloc[-1] 
+     'Kadar partikulat' : np.round([(filtrat['PM2.5'].iloc[-1]),(filtrat['PM10'].iloc[-1])],3),
+     'Senyawa CO': np.round(filtrat['CO'].iloc[-1],3),
+     'Kadar ozon' : np.round(filtrat['O3'].iloc[-1],3),
+     'Kadar sulfur di udara': np.round(filtrat['SO2'].iloc[-1],3),
+     'Kadar nitrogen di udara': np.round(filtrat['NO2'].iloc[-1],3),
+     'suhu (celsius)' : np.round(filtrat['TEMP'].iloc[-1],3),
+     'Suhu dan kelembapan': np.round(filtrat[['TEMP','DEWP']].iloc[-1],3),
+     'kecepatan angin': np.round(filtrat['WSPM'].iloc[-1],3)
 }
 
 # Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
@@ -72,29 +72,71 @@ with st.sidebar:
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 
-#-------------------- 
+# tambahan (Persiapan sub data) demi kemudahan
+gruppar = filtrat[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat
+gruppar['datetime'] = pd.to_datetime(gruppar['datetime']) #diurutkan dari waktu
+#Senyawa CO
+cogrp = filtrat[['datetime','CO']].copy() #inspeksi senyawa CO
+cogrp['datetime'] = pd.to_datetime(cogrp['datetime'])
+#senyawa ozon
+ozgrp = filtrat[['datetime','O3']].copy() #inspeksi senyawa ozon
+ozgrp['datetime'] = pd.to_datetime(ozgrp['datetime'])
+#Nitrogen
+nigrp = filtrat[['datetime','NO2']].copy() #inspeksi senyawa nitrogen
+nigrp['datetime'] = pd.to_datetime(nigrp['datetime'])
+#sulfur
+sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
+sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
 
-# #(Persiapan sub data)
-gruppar = filtrat[['datetime', 'PM2.5', 'PM10']] #inspeksi partikulat
-cogrp = filtrat[['datetime','CO']] #inspeksi senyawa CO
-ozgrpm = filtrat[['datetime','O3']] #inspeksi senyawa ozon
-nigrp = filtrat[['datetime','NO2']] #inspeksi senyawa nitrogen
-sulgrp = filtrat[['datetime','SO2']] #inspeksi senyawa sulfur
+#tambahan 2: rata-rata mingguan
+weekly = filtrat.resample('W-MON', on='datetime').mean().reset_index().copy() #data mingguan
+#persiapan data mingguan
+wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
+wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 
-#--------------------
-# A.1 Grafik partikulat untuk Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
+#Senyawa CO
+cowek = weekly[['datetime','CO']].copy() #inspeksi senyawa CO
+cowek['datetime'] = pd.to_datetime(cowek['datetime'])
+
+#senyawa ozon
+ozwek = weekly[['datetime','O3']].copy() #inspeksi senyawa ozon
+ozwek['datetime'] = pd.to_datetime(ozwek['datetime'])
+#Nitrogen
+niwek = weekly[['datetime','NO2']].copy() #inspeksi senyawa nitrogen
+niwek['datetime'] = pd.to_datetime(niwek['datetime'])
+#sulfur
+sulwek = weekly[['datetime','SO2']].copy() #inspeksi senyawa sulfur
+sulwek['datetime'] = pd.to_datetime(sulwek['datetime'])
+
+
+
+#-------------------- (laporan mingguan: bagian data aman)
+# Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
 [anPMa, dlPMa, anPMb, dlPMb] = [40, 150, 35, 75] 
 
 #Batas aman partikulat
 safety_limits = {'PM2.5 anual': anPMa,  'PM2.5 maksimal': dlPMa, # Batas anual dan Maksimal PM 2.5   
                  'PM10 anual': anPMb, 'PM10 maksimal': dlPMb} #Batas anual dan maksimal PM.10
+
 #Keterangan (1. a adalah inepeksi PM2.5 b adalah PM10 2. kode an adalah anual kode ma adalah nilai maksimal)
-# Judul grafik
+
+#Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
+[cochl, cogl, ozmin, ozmax, nmax, smax ] = [4000, 30000, 50, 160, 200, 500]
+#Deklarasi batas senyawa
+colim = { 'China' : cochl, 'Global' : cogl} #Batas senyawa CO
+ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Inspeksi Ozon/ ozon (O3)
+nitlim = {'anual': 40, 'maksimal' : nmax} #Batas  nitrogen dioksida (NO2)
+sulplim = {'anual': 40, 'maksimal': smax} #Batas Sulfur dioksida (SO2)
+
+
+#--------------------Grafik mingguan
+
+
+#---------------------
+# Judul grafik total
 st.header("Inspeksi partikulat dalam suatu waktu")
 
-# Koversi grup ke data waktu [partikulat]
-gruppar['datetime'] = pd.to_datetime(gruppar['datetime'])
-#grafik
+# komponen grafik
 plt.figure(figsize=(12, 6))
 
 # Scatter plot for PM2.5
@@ -115,19 +157,13 @@ plt.axhline(y=safety_limits['PM10 maximum'], color='orange', linestyle='--', lab
 plt.title('Inspeksi Partikulat sepanjang waktu')
 plt.xlabel('Date and Time')
 plt.ylabel('Particulate Levels (µg/m³)')
-plt.xticks(rotation=45)
+plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
 #------------------------------------------
-#Inspeksi batas senyawa karbon monoksida dan tiga senyawa lainnya
-[cochl, cogl, ozmin, ozmax, nmax, smax ] = [4000, 30000, 50, 160, 200, 500]
-#Deklarasi batas senyawa
-colim = { 'China' : cochl, 'Global' : cogl} #Batas senyawa CO
-ozlim = { 'minimum' : ozmin,'maksimum' : ozmax } #Inspeksi Ozon/ ozon (O3)
-nitlim = {'anual': 40, 'maksimal' : nmax} #Batas  nitrogen dioksida (NO2)
-sulplim = {'anual': 40, 'maksimal': smax} #Batas Sulfur dioksida (SO2)
+
 #--------------------------------------------
 #A3. Grafik Inspeksi senyawa CO
 
