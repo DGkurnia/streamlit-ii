@@ -89,7 +89,8 @@ sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
 
 #tambahan 2: rata-rata mingguan
-weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2']].mean().copy() #data mingguan
+weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM']].mean().copy() 
+#(data mingguan)
 #persiapan data mingguan
 wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
 wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
@@ -97,6 +98,8 @@ wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 #Inspeksi Senyawa
 wekcompound = weekly.resample('W-MON', on='datetime')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
+#Inspeksi aspek fisika
+wekphs = weekly.resample('W-MON', on='datetime')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
 
 #-------------------- (laporan mingguan: bagian data aman)
 # Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
@@ -123,6 +126,17 @@ complimit = {
     'NO2': {'anual': nitlim['anual'], 'maksimum': nitlim['maksimal']},
     'SO2': {'anual': sulplim['anual'], 'maksimum': sulplim['maksimal']}
 }
+#inspeksi batas suhu, tekanan, dan kelembapan
+#suhu
+[nolim, diglim, nrmlim, pnslim] = [0, 10, 25, 35]
+#tekanan
+atm = 1013.25
+#kelembapan
+[drl, comdr, humin] = [10, 15, 20]
+#penulisan ulang batas suhu
+btsuhu = {'nol' : nolim,'dingin': diglim,'normal': nrmlim, 'panas': pnslim}
+#penulisan batas kelembapan
+btlembap = {'kering': drl, 'biasa': comdr, 'lembap': humin}
 
 #--------------------Grafik mingguan
 # Inspeksi grafik mingguan
@@ -141,11 +155,11 @@ for pollutant in ['PM2.5', 'PM10']:
 
 # Inspeksi Senyawa
 for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
-    fig = px.bar(complimit[[pollutant]],
+    fig = px.bar(wekcompound[[pollutant]],
                  title=f"Weekly Average {pollutant.capitalize()} Levels",
                  labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
     
-    # Add safety limits as horizontal lines for CO, O3, NO2, SO2 if applicable
+    # Batas Inspeksi
     if pollutant == 'CO':
         fig.add_hline(y=complimit[pollutant]['China'], line_color='red', line_dash='dash',
                       annotation_text="Batas aman di China", annotation_position="top right")
@@ -166,7 +180,63 @@ for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
 
     st.plotly_chart(fig)
 
+#Inspeksi Aspek fisika
+for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
+    fig = px.bar(wekphs[[pollutant]],
+                 title=f"Weekly Average {pollutant.capitalize()} Levels",
+                 labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
+    
+    # Batas Inspeksi
+    if pollutant == 'TEMP':
+        fig.add_hline(y=btsuhu[pollutant]['nol'], line_color='red', line_dash='dash',
+                      annotation_text="Batas suhu beku", annotation_position="top right")
+        fig.add_hline(y=btsuhu[pollutant]['dingin'], line_color='black', line_dash='dash',
+                      annotation_text="Suhu dingin", annotation_position="top right")
+        fig.add_hline(y=btsuhu[pollutant]['normal'], line_color='black', line_dash='dash',
+                      annotation_text="Suhu Normal", annotation_position="top right")
+        fig.add_hline(y=btsuhu[pollutant]['panas'], line_color='black', line_dash='dash',
+                      annotation_text="Suhu Normal", annotation_position="top right")
+        
+    elif pollutant == 'PRES':
+        fig.add_hline(y=atm, line_color='red', line_dash='dash',
+                      annotation_text="Batas tekanan atmosfer", annotation_position="top right")
+        
+    elif pollutant in ['DEWP']:
+        fig.add_hline(y=btlembap[pollutant]['kering'], line_color='red', line_dash='dash',
+                      annotation_text="Batas kelembapan kering", annotation_position="top right")
+        fig.add_hline(y=btlembap[pollutant]['biasa'], line_color='orange', line_dash='dash',
+                      annotation_text="Batas kelembapan biasa", annotation_position="top right")
+        fig.add_hline(y=btlembap[pollutant]['lembap'], line_color='orange', line_dash='dash',
+                      annotation_text="Batas kelembapan tinggi", annotation_position="top right")
+
+    st.plotly_chart(fig)
+
 #---------------------(Grafik total)
+# Judul grafik total
+st.header("Inspeksi senyawa karbon monoksida dalam suatu waktu")
+# komponen grafik
+plt.figure(figsize=(12, 6))
+
+# Inspeksi CO
+plt.scatter(cogrp['datetime'], cogrp['CO'], color='pink', label='Nilai CO', alpha=0.6)
+
+
+# Batas anual
+plt.axhline(y=colim['China'], color='yellow', linestyle=':', label='Batas aman China')
+plt.axhline(y=colim['Global'], color='red', linestyle=':', label='Batas aman global')
+
+
+#rincian grafik CO
+plt.title('Inspeksi Senyawa Karbon Monoksida sepanjang waktu')
+plt.xlabel('Waktu (Tanggal dan waktu)')
+plt.ylabel('Konsentrasi CO (µg/m³)')
+plt.xticks(rotation=90)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+#------------------------------------------
+#A3. Grafik Inspeksi senyawa CO
 # Judul grafik total
 st.header("Inspeksi partikulat dalam suatu waktu")
 # komponen grafik
@@ -188,19 +258,15 @@ plt.axhline(y=safety_limits['PM10 maximum'], color='orange', linestyle='--', lab
 
 #rincian grafik partikulat
 plt.title('Inspeksi Partikulat sepanjang waktu')
-plt.xlabel('Date and Time')
-plt.ylabel('Particulate Levels (µg/m³)')
+plt.xlabel('Waktu (Tanggal dan waktu)')
+plt.ylabel('Tingkatan Partikulat (µg/m³)')
 plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
-#------------------------------------------
-#A3. Grafik Inspeksi senyawa CO
-
-
 #--------------------------------------------
-
+#A4 Inspeksi senyawa ozon
 
 
 
