@@ -212,7 +212,7 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
     st.plotly_chart(fig)
 
 #---------------------(Grafik total)
-# Judul grafik total
+# A2. Judul grafik Karbon Monoksida
 st.header("Inspeksi senyawa karbon monoksida dalam suatu waktu")
 # komponen grafik
 plt.figure(figsize=(12, 6))
@@ -235,9 +235,8 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
-#------------------------------------------
-#A3. Grafik Inspeksi senyawa CO
-# Judul grafik total
+#------------------------------------------A3. Grafik Inspeksi Partikulat
+# Judul grafik partikulat total
 st.header("Inspeksi partikulat dalam suatu waktu")
 # komponen grafik
 plt.figure(figsize=(12, 6))
@@ -245,16 +244,16 @@ plt.figure(figsize=(12, 6))
 # Scatter plot for PM2.5
 plt.scatter(gruppar['datetime'], gruppar['PM2.5'], color='blue', label='PM2.5', alpha=0.6)
 
-# Grafik sebaran
+# Grafik sebaran PM10
 plt.scatter(gruppar['datetime'], gruppar['PM10'], color='orange', label='PM10', alpha=0.6)
 
 # Batas anual
-plt.axhline(y=safety_limits['PM2.5 annual'], color='lightblue', linestyle=':', label='Annual Safe PM2.5 (40 µg/m³)')
-plt.axhline(y=safety_limits['PM10 annual'], color='lightyellow', linestyle=':', label='Annual Safe PM10 (35 µg/m³)')
+plt.axhline(y=safety_limits['PM2.5 anual'], color='lightblue', linestyle=':', label='Annual Safe PM2.5 (40 µg/m³)')
+plt.axhline(y=safety_limits['PM10 anual'], color='lightyellow', linestyle=':', label='Annual Safe PM10 (35 µg/m³)')
 
 # Batas Maksimal
-plt.axhline(y=safety_limits['PM2.5 maximum'], color='blue', linestyle='--', label='Max Safe PM2.5 (150 µg/m³)')
-plt.axhline(y=safety_limits['PM10 maximum'], color='orange', linestyle='--', label='Max Safe PM10 (75 µg/m³)')
+plt.axhline(y=safety_limits['PM2.5 maksimal'], color='blue', linestyle='--', label='Max Safe PM2.5 (150 µg/m³)')
+plt.axhline(y=safety_limits['PM10 maksimal'], color='orange', linestyle='--', label='Max Safe PM10 (75 µg/m³)')
 
 #rincian grafik partikulat
 plt.title('Inspeksi Partikulat sepanjang waktu')
@@ -265,8 +264,50 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
-#--------------------------------------------
-#A4 Inspeksi senyawa ozon
+#--------------------------------------------A4 Inspeksi senyawa ozon
+st.header("Inspeksi senyawa ozon dalam suatu waktu")
+# komponen grafik
+plt.figure(figsize=(12, 6))
+
+# Inspeksi ozon
+plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='pink', label='Nilai CO', alpha=0.6)
 
 
+# Batas ozon
+plt.axhline(y=ozlim['minimum'], color='blue', linestyle=':', label='Batas konsentrasi ozon minimum')
+plt.axhline(y=ozlim['maksimum'], color='green', linestyle=':', label='Batas konsentrasi ozon maksimum')
+
+
+#rincian grafik ozon
+plt.title('Inspeksi Senyawa ozon sepanjang waktu')
+plt.xlabel('Waktu (Tanggal dan waktu)')
+plt.ylabel('Konsentrasi ozon (µg/m³)')
+plt.xticks(rotation=90)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+#------------------------------------------A5. Grafik Inspeksi Senyawa Nitrogen Dioksida
+st.header("Inspeksi senyawa Nitrogen dioksida dalam suatu waktu")
+# komponen grafik
+plt.figure(figsize=(12, 6))
+
+# Inspeksi ozon
+plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='pink', label='Nilai CO', alpha=0.6)
+
+
+# Batas ozon
+plt.axhline(y=nitlim['anual'], color='orange', linestyle=':', label='Batas anual konsentrasi senyawa NO2')
+plt.axhline(y=nitlim['maksimal'], color='red', linestyle=':', label='Batas maksimal konsentrasi senyawa NO2')
+
+
+#rincian grafik ozon
+plt.title('Inspeksi Senyawa nitrogen dioksida sepanjang waktu')
+plt.xlabel('Waktu (Tanggal dan waktu)')
+plt.ylabel('Konsentrasi Nitrogen dioksida (µg/m³)')
+plt.xticks(rotation=90)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
