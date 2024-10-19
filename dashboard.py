@@ -153,7 +153,7 @@ btlembap = {'kering': drl, 'biasa': comdr, 'lembap': humin}
 # Inspeksi grafik mingguan di partikulat
 for pollutant in ['PM2.5', 'PM10']:
     # Create a DataFrame for the specific pollutant
-    pollutant_data = wekpar[['datetime', pollutant]].copy()  # Ensure we have the datetime column too
+    pollutant_data = wekpar[['datetime', pollutant]].copy()  # Jaga data asli
     fig = px.bar(pollutant_data,
                  x='datetime',  # Set x-axis to datetime
                  y=pollutant,
@@ -171,11 +171,17 @@ for pollutant in ['PM2.5', 'PM10']:
     # Show the figure
     fig.show()
 # Inspeksi Senyawa
+# Inspeksi Senyawa
 for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
-    fig = px.bar(wekcompound[[pollutant]],
+    # Create a DataFrame for the specific compound
+    compound_data = wekcompound[['datetime', pollutant]].copy()  # Include datetime for x-axis
+
+    fig = px.bar(compound_data,
+                 x='datetime',  # Set x-axis to datetime
+                 y=pollutant,
                  title=f"Weekly Average {pollutant.capitalize()} Levels",
-                 labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
-    
+                 labels={'value': f'{pollutant.capitalize()} levels'})
+
     # Batas Inspeksi
     if pollutant == 'CO':
         fig.add_hline(y=complimit[pollutant]['China'], line_color='red', line_dash='dash',
@@ -195,8 +201,9 @@ for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
         fig.add_hline(y=complimit[pollutant]['anual'], line_color='orange', line_dash='dash',
                       annotation_text="Batas Anual", annotation_position="top right")
 
+    # Display the figure using Streamlit
     st.plotly_chart(fig)
-
+    
 #Inspeksi Aspek fisika
 for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
     fig = px.bar(wekphs[[pollutant]],
