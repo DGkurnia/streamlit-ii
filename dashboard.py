@@ -29,15 +29,21 @@ min_date = beijingdf["datetime"].min().strftime('%Y-%m-%d')  # Tanggal
 max_date = beijingdf["datetime"].max().strftime('%Y-%m-%d')  
 
 # Data utama dalam rentang waktu tertentu (optional)
-main_df_filtered_dates = beijingdf[(beijingdf["datetime"]>=min_date)&(beijingdf["datetime"]<=max_date)]
-   
-unik = main_df_filtered_dates['station'].unique() #penenda
-   
-pilihan = st.selectbox("Select Station:", unik)
-   
-hasil = main_df_filtered_dates.groupby(['datetime','station']).filter(lambda x:x.station == pilihan)
-   
-filtrat = hasil.copy() #salinan untuk keamanan
+#Data utama
+main_df = beijingdf[(beijingdf["datetime"] >= str(min_date)) & 
+                (beijingdf["datetime"] <= str(max_date))]
+
+#Pemilihan stasiun
+stasiun_unik = main_df['station'].unique()
+
+#Deklarasi
+tahunan = main_df.groupby("datetime")
+
+#pilihan stasiun
+pilihan = st.selectbox("Pilihan stasiun :", stasiun_unik)
+
+# Filtrasi data
+filtrat = main_df[main_df['station'] == pilihan]
 
 #Laporan terkini
 terkini = {
