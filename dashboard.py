@@ -101,17 +101,16 @@ filtrat['datetime'] = pd.to_datetime(filtrat['datetime'])
 filtrat.set_index('datetime', inplace=True)
 
 #persiapan analisis data (data mingguan)
-weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM']].mean().copy() 
+weekly = filtrat.resample('W-MON')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM']].mean().copy() 
 
 #persiapan data mingguan
 wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
-wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 
 #Inspeksi Senyawa
-wekcompound = weekly.resample('W-MON', on='datetime')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
+wekcompound = weekly.resample('W-MON')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
 #Inspeksi aspek fisika
-wekphs = weekly.resample('W-MON', on='datetime')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
+wekphs = weekly.resample('W-MON')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
 
 #-------------------- (laporan mingguan: bagian data aman)
 # Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
