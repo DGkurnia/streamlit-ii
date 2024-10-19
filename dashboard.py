@@ -150,20 +150,26 @@ btsuhu = {'nol' : nolim,'dingin': diglim,'normal': nrmlim, 'panas': pnslim}
 btlembap = {'kering': drl, 'biasa': comdr, 'lembap': humin}
 
 #--------------------Grafik mingguan
-# Inspeksi grafik mingguan
+# Inspeksi grafik mingguan di partikulat
 for pollutant in ['PM2.5', 'PM10']:
-    fig = px.bar(wekpar[pollutant],
+    # Create a DataFrame for the specific pollutant
+    pollutant_data = wekpar[['datetime', pollutant]].copy()  # Ensure we have the datetime column too
+    fig = px.bar(pollutant_data,
+                 x='datetime',  # Set x-axis to datetime
+                 y=pollutant,
                  title=f"Weekly Average {pollutant.capitalize()} Levels",
                  labels={'value': f'{pollutant.capitalize()} levels'})
 
     # Bagian batas aman
-    fig.add_hline(y=safety_limits[f"{pollutant} anual"], line_color='orange', 
+    fig.add_hline(y=safety_limits[f"{pollutant} annual"], line_color='orange', 
                   annotation_text="Annual Limit", annotation_position="top left")
     
     if pollutant == 'PM10':
-        fig.add_hline(y=safety_limits[f"{pollutant} maksimal"], line_color='red',
+        fig.add_hline(y=safety_limits[f"{pollutant} maximal"], line_color='red',
                       annotation_text="Maximal Limit", annotation_position="top left")
 
+    # Show the figure
+    fig.show()
 # Inspeksi Senyawa
 for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
     fig = px.bar(wekcompound[[pollutant]],
