@@ -97,8 +97,6 @@ sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
 #tambahan 2: rata-rata mingguan
 #pemeriksaan tanggal
 filtrat['datetime'] = pd.to_datetime(filtrat['datetime'])
-#indeks untuk data mingguan
-filtrat.set_index('datetime', inplace=True)
 
 #persiapan analisis data (data mingguan)
 weekly = filtrat.resample('W-MON')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM']].mean().copy() 
@@ -203,7 +201,7 @@ for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
 
     # Display the figure using Streamlit
     st.plotly_chart(fig)
-    
+
 #Inspeksi Aspek fisika
 for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
     fig = px.bar(wekphs[[pollutant]],
