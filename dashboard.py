@@ -95,8 +95,14 @@ sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
 
 #tambahan 2: rata-rata mingguan
+#pemeriksaan tanggal
+filtrat['datetime'] = pd.to_datetime(filtrat['datetime'])
+#indeks untuk data mingguan
+filtrat.set_index('datetime', inplace=True)
+
+#persiapan analisis data (data mingguan)
 weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM']].mean().copy() 
-#(data mingguan)
+
 #persiapan data mingguan
 wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
 wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
