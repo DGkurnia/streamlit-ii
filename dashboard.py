@@ -25,8 +25,8 @@ beijingdf.reset_index(inplace=True)
 beijingdf['datetime'] = pd.to_datetime(beijingdf['datetime'])
 
 # Penentuan tanggal minimal dan maksimal
-min_date = beijingdf["datetime"].min().strftime('%Y-%m-%d')  # Tanggal
-max_date = beijingdf["datetime"].max().strftime('%Y-%m-%d')  
+min_date = beijingdf["datetime"].min().date()  # Tanggal
+max_date = beijingdf["datetime"].max().date()  
 
 # Data utama dalam rentang waktu tertentu (optional)
 #Data utama
