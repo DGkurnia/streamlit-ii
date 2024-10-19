@@ -104,7 +104,7 @@ filtrat.set_index('datetime', inplace=True)
 weekly = filtrat.resample('W-MON')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM']].mean().copy() 
 
 #persiapan data mingguan
-wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
+wekpar = weekly[['PM2.5', 'PM10']].mean().copy() #inspeksi partikulat mingguan
 
 #Inspeksi Senyawa
 wekcompound = weekly.resample('W-MON')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
@@ -321,4 +321,3 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.show()
-
