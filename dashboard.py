@@ -89,18 +89,35 @@ if len(filtrat)>0 :
      st.write(terkini)
 else:
       print("Tidak ditemukan rekaman untuk stasiun tersebut")
-    
+#seleksi data tunggal
+dtungal = {
+    'datetime': pd.date_range(start= min_date, periods=100).copy(),
+    'value': range(100)
+}    
+
 #Penambahan logo
 with st.sidebar:
     # Menambahkan logo perusahaan
     st.image("https://seeklogo.com/images/S/streamlit-logo-1A3B208AE4-seeklogo.com.png")
     
-    # Mengambil start_date & end_date dari date_input
-    start_date, end_date = st.date_input(
+    # Modifikasi tanggal awal dan akhir
+    seleksi = st.date_input(
         label='Filter Tanggal',min_value=min_date,
         max_value=max_date,
-        value=[min_date, max_date]
+        value=(min_date, max_date)
     )
+
+    #pemeriksaan data untuk inspeksi
+    if isinstance(seleksi, tuple):
+        start_date, end_date = seleksi
+    else:
+        start_date = end_date = seleksi
+#tampilkan jangkauan data
+filtered_data = filtrat[(filtrat['datetime'].dt.date >= start_date) & 
+                        (filtrat['datetime'].dt.date <= end_date)]
+#tampilkan hasil
+st.write(filtered_data)
+
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 
@@ -119,6 +136,9 @@ nigrp['datetime'] = pd.to_datetime(nigrp['datetime'])
 #sulfur
 sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
+#inspeksi di aspek fisika
+tempgrp = filtrat[['datetime','TEMP','DEWP']].copy()# inspeksi suhu
+tempgrp['datetime'] = pd.to_datetime(tempgrp['datetime'])
 
 #tambahan 2: rata-rata mingguan
 weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM','datetime']].mean().copy() 
@@ -163,7 +183,7 @@ complimit = {
 #inspeksi batas suhu, tekanan, dan kelembapan
 #suhu
 [nolim, diglim, nrmlim, pnslim] = [0, 10, 25, 35]
-#tekanan
+#tekanan (damal HPa)
 atm = 1013.25
 #kelembapan
 [drl, comdr, humin] = [10, 15, 20]
@@ -173,6 +193,7 @@ btsuhu = {'nol' : nolim,'dingin': diglim,'normal': nrmlim, 'panas': pnslim}
 btlembap = {'kering': drl, 'biasa': comdr, 'lembap': humin}
 #Batas Kecepatan angin
 [btng, ring, meng, lmbt, sgr, kut] = [1, 3, 5, 11, 17, 24]
+
 
 #--------------------Grafik mingguan
 # Inspeksi grafik mingguan
@@ -258,8 +279,6 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
                       annotation_text="Batas untuk menegah di angin tenang", annotation_position="top left")
         fig.add_hline(y=kut, line_color='red', line_dash='dash',
                       annotation_text="Batas untuk menegah di angin tenang", annotation_position="top left")
-      
-
 
     st.plotly_chart(fig)
 
@@ -360,6 +379,30 @@ plt.axhline(y=nitlim['maksimal'], color='red', linestyle=':', label='Batas maksi
 plt.title('Inspeksi Senyawa nitrogen dioksida sepanjang waktu')
 plt.xlabel('Waktu (Tanggal dan waktu)')
 plt.ylabel('Konsentrasi Nitrogen dioksida (µg/m³)')
+plt.xticks(rotation=90)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+#tampilkan hasil
+st.pyplot(plt)
+#------------------------------------------A6. Grafik Inspeksi Senyawa Sulfur Dioksida
+st.header("Inspeksi senyawa Nitrogen dioksida dalam suatu waktu")
+# komponen grafik
+plt.figure(figsize=(12, 6))
+
+# Inspeksi senyawa sulfur dioksida
+plt.scatter(sulgrp['datetime'], sulgrp['SO2'], color='darkyellow', label='Nilai SO2', alpha=0.6)
+
+
+# Batas ozon
+plt.axhline(y=nitlim['anual'], color='orange', linestyle=':', label='Batas anual konsentrasi senyawa SO2')
+plt.axhline(y=nitlim['maksimal'], color='red', linestyle=':', label='Batas maksimal konsentrasi senyawa SO2')
+
+
+#rincian grafik ozon
+plt.title('Inspeksi Senyawa sulfur dioksida sepanjang waktu')
+plt.xlabel('Waktu (Tanggal dan waktu)')
+plt.ylabel('Konsentrasi Sulfur dioksida (µg/m³)')
 plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
