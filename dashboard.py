@@ -102,8 +102,9 @@ with st.sidebar:
     
     # Modifikasi tanggal awal dan akhir
     seleksi = st.date_input(
-        label='Filter Tanggal',min_value=min_date,
-        max_value=max_date,
+        label='Filter Tanggal',
+        start_date=min_date,
+        end_date=max_date,
         value=(min_date, max_date)
     )
 
@@ -116,6 +117,7 @@ with st.sidebar:
 filtered_data = filtrat[(filtrat['datetime'].dt.date >= start_date) & 
                         (filtrat['datetime'].dt.date <= end_date)]
 #tampilkan hasil
+st.header("Data mingguan")
 st.write(filtered_data)
 
 #persiapan judul
