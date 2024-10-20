@@ -271,7 +271,8 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+#tampilkan hasil
+st.pyplot(plt)
 #------------------------------------------A3. Grafik Inspeksi Partikulat
 # Judul grafik partikulat total
 st.header("Inspeksi partikulat dalam suatu waktu")
@@ -300,7 +301,8 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+#tampilkan hasil
+st.pyplot(plt)
 #--------------------------------------------A4 Inspeksi senyawa ozon
 st.header("Inspeksi senyawa ozon dalam suatu waktu")
 # komponen grafik
@@ -323,7 +325,8 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+#tampilkan hasil
+st.pyplot(plt)
 #------------------------------------------A5. Grafik Inspeksi Senyawa Nitrogen Dioksida
 st.header("Inspeksi senyawa Nitrogen dioksida dalam suatu waktu")
 # komponen grafik
@@ -346,5 +349,6 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+#tampilkan hasil
+st.pyplot(plt)
 
