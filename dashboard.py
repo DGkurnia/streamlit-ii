@@ -133,7 +133,7 @@ wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 wekcompound = weekly.resample('W-MON', on='datetime')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
 #Inspeksi aspek fisika
-wekphs = weekly.resample('W-MON', on='datetime')[['TEMP', 'PRES', 'DEWP', 'WSPM']]).mean().copy()
+wekphs = weekly.resample('W-MON', on='datetime')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
 
 #-------------------- (laporan mingguan: bagian data aman)
 # Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
