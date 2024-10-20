@@ -133,7 +133,7 @@ wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 wekcompound = weekly.resample('W-MON', on='datetime')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
 #Inspeksi aspek fisika
-wekphs = weekly.resample('W-MON', on='datetime)[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
+wekphs = weekly.resample('W-MON', on='datetime')[['TEMP', 'PRES', 'DEWP', 'WSPM']]).mean().copy()
 
 #-------------------- (laporan mingguan: bagian data aman)
 # Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
@@ -222,7 +222,7 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
                  title=f"Rata-rata mingguan {pollutant.capitalize()} Levels",
                  labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
     
-    # Batas Inspeksi
+    # Batas Inspeksi suhu
     if pollutant == 'TEMP':
         fig.add_hline(y=btsuhu['nol'], line_color='red', line_dash='dash',
                       annotation_text="Batas suhu beku", annotation_position="top right")
@@ -232,11 +232,11 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
                       annotation_text="Suhu Normal", annotation_position="top right")
         fig.add_hline(y=btsuhu['panas'], line_color='black', line_dash='dash',
                       annotation_text="Suhu Normal", annotation_position="top right")
-        
+    # Batas Inspeksi tekanan    
     elif pollutant == 'PRES':
         fig.add_hline(y=atm, line_color='red', line_dash='dash',
                       annotation_text="Batas tekanan atmosfer", annotation_position="top right")
-        
+    # Batas Inspeksi kelembapan    
     elif pollutant in ['DEWP']:
         fig.add_hline(y=btlembap['kering'], line_color='red', line_dash='dash',
                       annotation_text="Batas kelembapan kering", annotation_position="top right")
@@ -244,7 +244,7 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
                       annotation_text="Batas kelembapan biasa", annotation_position="top right")
         fig.add_hline(y=btlembap['lembap'], line_color='orange', line_dash='dash',
                       annotation_text="Batas kelembapan tinggi", annotation_position="top right")
-
+    # Batas Inspeksi kecepatan angin
     elif pollutant in ['WSPM']:
         fig.add_hline(y=btng, line_color='darkblue', line_dash='dash',
                       annotation_text="Batas Kecepatan tenang", annotation_position="top right")
