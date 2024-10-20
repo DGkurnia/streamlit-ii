@@ -93,13 +93,17 @@ with st.sidebar:
     # Menambahkan logo perusahaan
     st.image("https://seeklogo.com/images/S/streamlit-logo-1A3B208AE4-seeklogo.com.png")
     
+    start_date = min_date
+    end_date = max_date
     # Mengambil start_date & end_date dari date_input
-    start_date, end_date = st.date_input(
+    seleksi = st.date_input(
         label='Filter Tanggal',
         min_value=min_date,
         max_value=max_date,
         value=(min_date, max_date)
     )
+    #tampilkan hasil
+    st.write("Tanggal Pilihan:", seleksi)
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 
