@@ -79,9 +79,7 @@ terkini = {
      'Kadar nitrogen di udara': np.round(filtrat['NO2'].iloc[-1],3),
      'suhu (celsius)' : np.round(filtrat['TEMP'].iloc[-1],3),
      'kelembapan': np.round(filtrat['DEWP'].iloc[-1],3),
-     'arah angin': filtrat['wd'].iloc[-1],
-     'kecepatan angin': np.round(filtrat['WSPM'].iloc[-1],3),
-     'kadar hujan': np.round(filtrat['RAIN'].iloc[-1],3)
+     'kecepatan angin': np.round(filtrat['WSPM'].iloc[-1],3)
 }
 
 # Penampilan grafik hasil jika ada record yang cocok dengan pemilihan user    
@@ -89,37 +87,19 @@ if len(filtrat)>0 :
      st.write(terkini)
 else:
       print("Tidak ditemukan rekaman untuk stasiun tersebut")
-#seleksi data tunggal
-dtungal = {
-    'datetime': pd.date_range(start= min_date, periods=100).copy(),
-    'value': range(100)
-}    
-
+    
 #Penambahan logo
 with st.sidebar:
     # Menambahkan logo perusahaan
     st.image("https://seeklogo.com/images/S/streamlit-logo-1A3B208AE4-seeklogo.com.png")
     
-    # Modifikasi tanggal awal dan akhir
-    seleksi = st.date_input(
+    # Mengambil start_date & end_date dari date_input
+    start_date, end_date = st.date_input(
         label='Filter Tanggal',
-        start_date=min_date,
-        end_date=max_date,
+        min_value=min_date,
+        max_value=max_date,
         value=(min_date, max_date)
     )
-
-    #pemeriksaan data untuk inspeksi
-    if isinstance(seleksi, tuple):
-        start_date, end_date = seleksi
-    else:
-        start_date = end_date = seleksi
-#tampilkan jangkauan data
-filtered_data = filtrat[(filtrat['datetime'].dt.date >= start_date) & 
-                        (filtrat['datetime'].dt.date <= end_date)]
-#tampilkan hasil
-st.header("Data mingguan")
-st.write(filtered_data)
-
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 
@@ -138,9 +118,6 @@ nigrp['datetime'] = pd.to_datetime(nigrp['datetime'])
 #sulfur
 sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
-#inspeksi di aspek fisika
-tempgrp = filtrat[['datetime','TEMP','DEWP']].copy()# inspeksi suhu
-tempgrp['datetime'] = pd.to_datetime(tempgrp['datetime'])
 
 #tambahan 2: rata-rata mingguan
 weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM','datetime']].mean().copy() 
@@ -152,10 +129,10 @@ wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingg
 wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 
 #Inspeksi Senyawa
-wekcompound = weekly.resample('W-MON', on='datetime')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
+wekcompound = weekly.resample('W-MON')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
 #Inspeksi aspek fisika
-wekphs = weekly.resample('W-MON', on='datetime')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
+wekphs = weekly.resample('W-MON')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
 
 #-------------------- (laporan mingguan: bagian data aman)
 # Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
@@ -185,7 +162,7 @@ complimit = {
 #inspeksi batas suhu, tekanan, dan kelembapan
 #suhu
 [nolim, diglim, nrmlim, pnslim] = [0, 10, 25, 35]
-#tekanan (damal HPa)
+#tekanan
 atm = 1013.25
 #kelembapan
 [drl, comdr, humin] = [10, 15, 20]
@@ -193,15 +170,12 @@ atm = 1013.25
 btsuhu = {'nol' : nolim,'dingin': diglim,'normal': nrmlim, 'panas': pnslim}
 #penulisan batas kelembapan
 btlembap = {'kering': drl, 'biasa': comdr, 'lembap': humin}
-#Batas Kecepatan angin
-[btng, ring, meng, lmbt, sgr, kut] = [1, 3, 5, 11, 17, 24]
-
 
 #--------------------Grafik mingguan
 # Inspeksi grafik mingguan
 for pollutant in ['PM2.5', 'PM10']:
     fig = px.bar(wekpar[pollutant],
-                 title=f"Rata-rata mingguan {pollutant.capitalize()} Levels",
+                 title=f"Nilai rata-rata mingguan {pollutant.capitalize()} Levels",
                  labels={'value': f'{pollutant.capitalize()} levels'})
 
     # Bagian batas aman
@@ -215,7 +189,7 @@ for pollutant in ['PM2.5', 'PM10']:
 # Inspeksi Senyawa
 for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
     fig = px.bar(wekcompound[[pollutant]],
-                 title=f"Rata-rata mingguan {pollutant.capitalize()} Levels",
+                 title=f"Nilai rata-rata mingguan {pollutant.capitalize()} Levels",
                  labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
     
     # Batas Inspeksi
@@ -242,10 +216,10 @@ for pollutant in ['CO', 'O3', 'NO2', 'SO2']:
 #Inspeksi Aspek fisika
 for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
     fig = px.bar(wekphs[[pollutant]],
-                 title=f"Rata-rata mingguan {pollutant.capitalize()} Levels",
+                 title=f"Nilai rata-rata mingguan {pollutant.capitalize()} Levels",
                  labels={f'value_{pollutant}': f'{pollutant.capitalize()} levels'})
     
-    # Batas Inspeksi suhu
+    # Batas Inspeksi
     if pollutant == 'TEMP':
         fig.add_hline(y=btsuhu['nol'], line_color='red', line_dash='dash',
                       annotation_text="Batas suhu beku", annotation_position="top right")
@@ -255,11 +229,11 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
                       annotation_text="Suhu Normal", annotation_position="top right")
         fig.add_hline(y=btsuhu['panas'], line_color='black', line_dash='dash',
                       annotation_text="Suhu Normal", annotation_position="top right")
-    # Batas Inspeksi tekanan    
+        
     elif pollutant == 'PRES':
         fig.add_hline(y=atm, line_color='red', line_dash='dash',
                       annotation_text="Batas tekanan atmosfer", annotation_position="top right")
-    # Batas Inspeksi kelembapan    
+        
     elif pollutant in ['DEWP']:
         fig.add_hline(y=btlembap['kering'], line_color='red', line_dash='dash',
                       annotation_text="Batas kelembapan kering", annotation_position="top right")
@@ -267,20 +241,6 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
                       annotation_text="Batas kelembapan biasa", annotation_position="top right")
         fig.add_hline(y=btlembap['lembap'], line_color='orange', line_dash='dash',
                       annotation_text="Batas kelembapan tinggi", annotation_position="top right")
-    # Batas Inspeksi kecepatan angin
-    elif pollutant in ['WSPM']:
-        fig.add_hline(y=btng, line_color='darkblue', line_dash='dash',
-                      annotation_text="Batas Kecepatan tenang", annotation_position="top right")
-        fig.add_hline(y=ring, line_color='blue', line_dash='dash',
-                      annotation_text="Batas kecepatan angin tenang", annotation_position="top right")
-        fig.add_hline(y=meng, line_color='lightblue', line_dash='dash',
-                      annotation_text="Batas tenegah di angin tenang", annotation_position="top right")
-        fig.add_hline(y=lmbt, line_color='green', line_dash='dash',
-                      annotation_text="Batas untuk angin lambat", annotation_position="top left")
-        fig.add_hline(y=sgr, line_color='yellow', line_dash='dash',
-                      annotation_text="Batas untuk menegah di angin tenang", annotation_position="top left")
-        fig.add_hline(y=kut, line_color='red', line_dash='dash',
-                      annotation_text="Batas untuk menegah di angin tenang", annotation_position="top left")
 
     st.plotly_chart(fig)
 
@@ -307,8 +267,7 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-#tampilkan hasil
-st.pyplot(plt)
+plt.show()
 #------------------------------------------A3. Grafik Inspeksi Partikulat
 # Judul grafik partikulat total
 st.header("Inspeksi partikulat dalam suatu waktu")
@@ -337,15 +296,14 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-#tampilkan hasil
-st.pyplot(plt)
+plt.show()
 #--------------------------------------------A4 Inspeksi senyawa ozon
 st.header("Inspeksi senyawa ozon dalam suatu waktu")
 # komponen grafik
 plt.figure(figsize=(12, 6))
 
 # Inspeksi ozon
-plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='purple', label='Nilai CO', alpha=0.6)
+plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='pink', label='Nilai CO', alpha=0.6)
 
 
 # Batas ozon
@@ -361,15 +319,14 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-#tampilkan hasil
-st.pyplot(plt)
+plt.show()
 #------------------------------------------A5. Grafik Inspeksi Senyawa Nitrogen Dioksida
 st.header("Inspeksi senyawa Nitrogen dioksida dalam suatu waktu")
 # komponen grafik
 plt.figure(figsize=(12, 6))
 
 # Inspeksi ozon
-plt.scatter(nigrp['datetime'], nigrp['NO2'], color='black', label='Nilai NO2', alpha=0.6)
+plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='pink', label='Nilai CO', alpha=0.6)
 
 
 # Batas ozon
@@ -385,29 +342,5 @@ plt.xticks(rotation=90)
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-#tampilkan hasil
-st.pyplot(plt)
-#------------------------------------------A6. Grafik Inspeksi Senyawa Sulfur Dioksida
-st.header("Inspeksi senyawa Nitrogen dioksida dalam suatu waktu")
-# komponen grafik
-plt.figure(figsize=(12, 6))
+plt.show()
 
-# Inspeksi senyawa sulfur dioksida
-plt.scatter(sulgrp['datetime'], sulgrp['SO2'], color='darkyellow', label='Nilai SO2', alpha=0.6)
-
-
-# Batas ozon
-plt.axhline(y=nitlim['anual'], color='orange', linestyle=':', label='Batas anual konsentrasi senyawa SO2')
-plt.axhline(y=nitlim['maksimal'], color='red', linestyle=':', label='Batas maksimal konsentrasi senyawa SO2')
-
-
-#rincian grafik ozon
-plt.title('Inspeksi Senyawa sulfur dioksida sepanjang waktu')
-plt.xlabel('Waktu (Tanggal dan waktu)')
-plt.ylabel('Konsentrasi Sulfur dioksida (µg/m³)')
-plt.xticks(rotation=90)
-plt.legend()
-plt.grid(True)
-plt.tight_layout()
-#tampilkan hasil
-st.pyplot(plt)
