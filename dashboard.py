@@ -357,10 +357,10 @@ st.pyplot(plt)
 plt.figure(figsize=(15, 8))
 
 # Grafik Sebaran Suhu
-plt.scatter(temptgrp['TEMP'], temptgrp['TEMP'], color='blue', label='suhu', alpha=0.6)
+plt.scatter(temptgrp['datetime'], temptgrp['TEMP'], color='blue', label='suhu', alpha=0.6)
 
 # Grafik sebaran Kelembapan
-plt.scatter(temptgrp['DEWP'], temptgrp['DEWP'], color='black', label='kelembapan', alpha=0.6)
+plt.scatter(temptgrp['datetime'], temptgrp['DEWP'], color='black', label='kelembapan', alpha=0.6)
 
 
 # Batas suhu dan kelmbapan
