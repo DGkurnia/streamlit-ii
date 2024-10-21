@@ -25,7 +25,7 @@ beijingdf.reset_index(inplace=True)
 beijingdf['datetime'] = pd.to_datetime(beijingdf['datetime'], errors='coerce')
 
 # Penentuan tanggal minimal dan maksimal
-min_date = beijingdf["datetime"].min()   # Tanggal minimal
+min_date = beijingdf["datetime"].min()  # Tanggal minimal
 max_date = beijingdf["datetime"].max()   #Tanggal maksimal
 
 # Check if 'datetime' exists in beijingdf
@@ -98,16 +98,21 @@ with st.sidebar:
     # Mengambil start_date & end_date dari date_input
     seleksi = st.date_input(
         label='Filter Tanggal',
-        min_value=min_date,
-        max_value=max_date,
+        min_value= min_date,
+        max_value= max_date,
         value=(min_date, max_date)
     )
     #tampilkan hasil
     st.write("Tanggal Pilihan:", seleksi)
 #--------------------------Pemilihan batas tanggal
 awal,akhir = seleksi
+awal = pd.to_datetime(awal)
+akhir = pd.to_datetime(akhir)
+#deklatasi 
+filtrat['datetime'] = pd.to_datetime(filtrat['datetime'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
 #pemfilteran grup data
 filtered_data = filtrat[(filtrat['datetime'] >= awal) & (filtrat['datetime'] <= akhir)]
+
 #--------------------------
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
