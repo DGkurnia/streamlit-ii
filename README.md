@@ -2,7 +2,7 @@
 
 ## Komponen Colab
 ```
-a. datasetkotor yang terismpan di folder 'aqins' di bagian notebook
+a. dataset kotor yang terismpan di folder 'aqins' di bagian notebook
 b. catatan google colab
 ```
 
@@ -15,21 +15,14 @@ teks requirement
 file json comp dengan nama 'launch.jsonc'
 ```
 
-### Inspeksi data di colab
+#### Rincian komponen submisi
 ```
-a. Proses pemeriksaan data untuk pembersihan data
-b. Proses pembersihan data untuk mejawab pertanyaan berikut:
-- Pertanyaan 1 : Bagaimana kondisi suhu di dua belas kota dari tahun 2013 samapai 2017 ?
-- Pertanyaan 2 : Bagaimana pemeriksaan ukuran partikuler (untuk PM 2.5 dan PM 10) di dua belas kota dari tahun 2013 sampai 2017 ?.
-- Pertanyaan 3 : Bagaimana pemeriksaan kadar sulfur dioksida (SO2), kadar nitrogen monoksida (NO) dan karbon monoksida (CO) di dua belas kota dari tahun 2013 sampai 2017 ?.
-- Pertanyaan 4 : Bagaimana pemeriksaan kondisi gas ozon dari tahun 2013 sampai 2017 ?.
-Proses pembersihan data dengan interpolasi demi memperoleh informasi
-b.1 pembersihan data dengan teknik interpolasi
-b.2 pemeriksaan untuk interpolasi dua tahap untuk pembersihan data
-b.3 penerapan interpolasi demi menghindari penghapusan  
-
+link dashboard : https://dummyaqidash.streamlit.app/
+data : dataset AQI (beijingdf)
+Notebook colab : airquality.ipynb 
+link ke colab : https://colab.research.google.com/drive/1Dm7FyKKAo8SHvwUhlsJEXIb2MsrruYwv?usp=sharing
 ```
-### Informasi data
+#### Informasi data
 ```
 a informasi partikulat di dua kondisi berbeda
 **Resume Inspeksi Partikulat**
@@ -71,6 +64,14 @@ e. Inspeksi senyawa NO2
 
 
 ```
+### Komando dashboard
+```
+a. git clone https://github.com/DGkurnia/streamlit-ii #Isi dokuman dashboard.py
+b. install git github desktop #Demi memeindahkan file 'beijingdf.csv' 
+c. proses 'clone' dari laptop ke github untukmemasukan file 'beijingdf.csv'
+
+```
+
 
 ### Eksekusi komando dashboard
 ```
@@ -79,6 +80,9 @@ b. pastikan elemen di dalam sudah sesuai
 c. link ke streamlit: 'https://dummyaqi.streamlit.app/'
 
 ```
+
+
+
 
 ### Instalasi di Streamlit
 ```
