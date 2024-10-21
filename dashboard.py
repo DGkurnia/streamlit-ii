@@ -25,8 +25,8 @@ beijingdf.reset_index(inplace=True)
 beijingdf['datetime'] = pd.to_datetime(beijingdf['datetime'], errors='coerce')
 
 # Penentuan tanggal minimal dan maksimal
-min_date = beijingdf["datetime"].min()   # Tanggal
-max_date = beijingdf["datetime"].max()  
+min_date = beijingdf["datetime"].min()   # Tanggal minimal
+max_date = beijingdf["datetime"].max()   #Tanggal maksimal
 
 # Check if 'datetime' exists in beijingdf
 if 'datetime' not in beijingdf.columns:
@@ -104,6 +104,11 @@ with st.sidebar:
     )
     #tampilkan hasil
     st.write("Tanggal Pilihan:", seleksi)
+#--------------------------Pemilihan batas tanggal
+awal,akhir = seleksi
+#pemfilteran grup data
+filtered_data = filtrat[(filtrat['datetime'] >= awal) & (filtrat['datetime'] <= akhir)]
+#--------------------------
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
 #tambahan 1: rata-rata mingguan
@@ -111,22 +116,22 @@ weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 
 weekly['datetime'] = pd.to_datetime(weekly['datetime']).copy()
 
 # tambahan (Persiapan sub data) demi kemudahan
-gruppar = filtrat[["datetime", 'PM2.5', 'PM10']].copy() #inspeksi partikulat
-gruppar["datetime"] = pd.to_datetime(gruppar['datetime']) #diurutkan dari waktu
-#Senyawa CO
-cogrp = filtrat[['datetime','CO']].copy() #inspeksi senyawa CO
+gruppar = filtered_data[["datetime", 'PM2.5', 'PM10']].copy() #Partikulat
+gruppar["datetime"] = pd.to_datetime(gruppar['datetime'])
+
+cogrp = filtered_data[['datetime', 'CO']].copy() #Senyawa CO
 cogrp["datetime"] = pd.to_datetime(cogrp["datetime"])
-#senyawa ozon
-ozgrp = filtrat[['datetime','O3']].copy() #inspeksi senyawa ozon
+
+ozgrp = filtered_data[['datetime', 'O3']].copy() # Senyawa ozon
 ozgrp['datetime'] = pd.to_datetime(ozgrp['datetime'])
-#Nitrogen
-nigrp = filtrat[['datetime','NO2']].copy() #inspeksi senyawa nitrogen
+
+nigrp = filtered_data[['datetime', 'NO2']].copy() #Senyawa NO2
 nigrp['datetime'] = pd.to_datetime(nigrp['datetime'])
-#sulfur
-sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
+
+sulgrp = filtered_data[['datetime', 'SO2']].copy() #Senyawa SO2
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
-#Analisis sub data demi inspeksi fisika
-temptgrp = filtrat[['datetime','TEMP','DEWP']].copy() #inspeksi suhu dan kelembapan
+
+temptgrp = filtered_data[['datetime', 'TEMP', 'DEWP']].copy()#SUhu dan Kelembapan
 temptgrp['datetime'] = pd.to_datetime(temptgrp['datetime'])
 
 #(data mingguan) persiapan data mingguan
