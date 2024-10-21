@@ -106,6 +106,9 @@ with st.sidebar:
     st.write("Tanggal Pilihan:", seleksi)
 #persiapan judul
 st.header('Inspeksi Kualitas Udara in Beijing :sparkles:')
+#tambahan 1: rata-rata mingguan
+weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM','datetime']].mean().copy() 
+weekly['datetime'] = pd.to_datetime(weekly['datetime']).copy()
 
 # tambahan (Persiapan sub data) demi kemudahan
 gruppar = filtrat[["datetime", 'PM2.5', 'PM10']].copy() #inspeksi partikulat
@@ -122,13 +125,11 @@ nigrp['datetime'] = pd.to_datetime(nigrp['datetime'])
 #sulfur
 sulgrp = filtrat[['datetime','SO2']].copy() #inspeksi senyawa sulfur
 sulgrp['datetime'] = pd.to_datetime(sulgrp['datetime'])
+#Analisis sub data demi inspeksi fisika
+temptgrp = filtrat[['datetime','TEMP','DEWP']].copy() #inspeksi suhu dan kelembapan
+temptgrp['datetime'] = pd.to_datetime(temptgrp['datetime'])
 
-#tambahan 2: rata-rata mingguan
-weekly = filtrat.resample('W-MON', on='datetime')[['PM2.5', 'PM10', 'CO', 'O3', 'NO2', 'SO2','TEMP','PRES','DEWP','WSPM','datetime']].mean().copy() 
-weekly['datetime'] = pd.to_datetime(weekly['datetime']).copy()
-
-#(data mingguan)
-#persiapan data mingguan
+#(data mingguan) persiapan data mingguan
 wekpar = weekly[['datetime', 'PM2.5', 'PM10']].copy() #inspeksi partikulat mingguan
 wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 
@@ -136,7 +137,7 @@ wekpar['datetime'] = pd.to_datetime(wekpar['datetime']) #diurutkan dari waktu
 wekcompound = weekly.resample('W-MON')[['CO', 'O3', 'NO2', 'SO2']].mean().copy()#salinan untuk senyawa lain
 
 #Inspeksi aspek fisika
-wekphs = weekly.resample('W-MON')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy()
+wekphs = weekly.resample('W-MON')[['TEMP', 'PRES', 'DEWP', 'WSPM']].mean().copy() #Inspeksi Aspek fisika
 
 #-------------------- (laporan mingguan: bagian data aman)
 # Inspeksi keamanan partikulat (nilai PM2.5 & nilai PM10)
@@ -252,7 +253,7 @@ for pollutant in ['TEMP', 'PRES', 'DEWP', 'WSPM']:
 # A2. Judul grafik Karbon Monoksida
 st.header("Inspeksi senyawa karbon monoksida dalam suatu waktu")
 # komponen grafik
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(15, 8))
 
 # Inspeksi CO
 plt.scatter(cogrp['datetime'], cogrp['CO'], color='pink', label='Nilai CO', alpha=0.6)
@@ -277,9 +278,9 @@ st.pyplot(plt)
 # Judul grafik partikulat total
 st.header("Inspeksi partikulat dalam suatu waktu")
 # komponen grafik
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(15, 8))
 
-# Scatter plot for PM2.5
+# Grafik Sebaran PM2.5
 plt.scatter(gruppar['datetime'], gruppar['PM2.5'], color='blue', label='PM2.5', alpha=0.6)
 
 # Grafik sebaran PM10
@@ -306,7 +307,7 @@ st.pyplot(plt)
 #--------------------------------------------A4 Inspeksi senyawa ozon
 st.header("Inspeksi senyawa ozon dalam suatu waktu")
 # komponen grafik
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(15, 8))
 
 # Inspeksi ozon
 plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='pink', label='Nilai CO', alpha=0.6)
@@ -330,7 +331,7 @@ st.pyplot(plt)
 #------------------------------------------A5. Grafik Inspeksi Senyawa Nitrogen Dioksida
 st.header("Inspeksi senyawa Nitrogen dioksida dalam suatu waktu")
 # komponen grafik
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(15, 8))
 
 # Inspeksi ozon
 plt.scatter(ozgrp['datetime'], ozgrp['O3'], color='pink', label='Nilai CO', alpha=0.6)
@@ -351,4 +352,32 @@ plt.grid(True)
 plt.tight_layout()
 #tampilkan hasil
 st.pyplot(plt)
+#------------------------------------------A6. Grafik Inspeksi Suhu dan Kelembapan
+# komponen grafik
+plt.figure(figsize=(15, 8))
 
+# Grafik Sebaran Suhu
+plt.scatter(temptgrp['TEMP'], temptgrp['TEMP'], color='blue', label='suhu', alpha=0.6)
+
+# Grafik sebaran Kelembapan
+plt.scatter(temptgrp['DEWP'], temptgrp['DEWP'], color='black', label='kelembapan', alpha=0.6)
+
+
+# Batas suhu dan kelmbapan
+plt.axhline(y=nolim, color='darkblue', linestyle=':', label='Batas suhu nol')
+plt.axhline(y=diglim, color='blue', linestyle=':', label='Batas suhu dingin')
+plt.axhline(y=comdr, color='darkgreen', linestyle=':', label='Batas kelembapan optimal')
+plt.axhline(y=humin, color='green', linestyle=':', label='Batas minimum kelembapan tinggi')
+plt.axhline(y=nrmlim, color='orange', linestyle=':', label='Batas minimum suhu normal')
+plt.axhline(y=pnslim, color='orange', linestyle=':', label='Batas minimum suhu panas')
+
+#rincian grafik ozon
+plt.title('Inspeksi Suhu dan Kelembapan sepanjang waktu')
+plt.xlabel('Waktu (Tanggal dan waktu)')
+plt.ylabel('Nilai Suhu dalam celsius')
+plt.xticks(rotation=90)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+#tampilkan hasil
+st.pyplot(plt)
