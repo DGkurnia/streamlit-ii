@@ -4,6 +4,7 @@
 ```
 a. dataset kotor yang terismpan di folder 'aqins' di bagian notebook
 b. catatan google colab
+c. ilustrasi hasil
 ```
 
 ## Komponen Dashboard
@@ -64,12 +65,13 @@ e. Inspeksi senyawa NO2
 
 
 ```
-### Komando dashboard
+### Komando  di Streamlit
 ```
 a. git clone https://github.com/DGkurnia/streamlit-ii #Isi dokuman dashboard.py
 b. install git github desktop #Demi memeindahkan file 'beijingdf.csv' 
-c. proses 'clone' dari laptop ke github untukmemasukan file 'beijingdf.csv'
-
+c. proses 'clone' dari laptop ke github untuk memasukan file 'beijingdf.csv'
+d. Publikasi di streamlit.share.io
+e. lakukan pengeditan
 ```
 
 
