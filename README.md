@@ -62,21 +62,18 @@ e. Inspeksi senyawa NO2
 -a. Kota Dingling adalah satu-satunya kota dengan satu kasus nitrogen dioksida melewati batas maksimal yang dibolehkan, kota ini adalah satu dari empat kota dengan kasus dibawah sepuluh untuk kelebihan kadar nitrogen dioksida yang melewati batas maksimal.
 -b. Mayoritas kasus untuk inspeksi senyawa NO2/ nitrogen dioksida adalah 'melewati batas anual'
 -c. Dari empat kota dengan kasus nitrogen dioksida melewati batas maksimal yang dibolehkan, Kota Wanliu adalah kota dengan nilai paling tinggi
-
-
 ```
-### Komando  di Streamlit
+
+### Komando  di Streamlit dan eksekusi komando
 ```
+#### Bagian github
 a. git clone https://github.com/DGkurnia/streamlit-ii #Isi dokuman dashboard.py
 b. install git github desktop #Demi memeindahkan file 'beijingdf.csv' 
 c. proses 'clone' dari laptop ke github untuk memasukan file 'beijingdf.csv'
 d. Publikasi di streamlit.share.io
-e. lakukan pengeditan
-```
+e. lakukan pengeditan lanjut untuk modifikasi
 
-
-### Eksekusi komando dashboard
-```
+#### Eksekusi komando dashboard
 a. siapkan repositori 'streamlit-ii' di github
 b. pastikan elemen di dalam sudah sesuai
 c. link ke streamlit: 'https://dummyaqi.streamlit.app/'
@@ -84,13 +81,13 @@ c. link ke streamlit: 'https://dummyaqi.streamlit.app/'
 ```
 
 
-
-
 ### Instalasi di Streamlit
 ```
 pip install streamlit
 pip install -r requirements.txt # untuk instalasi file di vscode
 instal di streamlit online dengan url : https://dummyaqidash.streamlit.app/
+#instalasi jalur luring melalui vscode
+python -m streamlit run dashboard.py
 ```
 
 
